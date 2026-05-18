@@ -1,0 +1,11 @@
+<svg width="300" height="300" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="none"/>
+        <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle"
+              style="font-family: Arial, sans-serif; font-weight: 900; font-size: 110px; fill: #CC0000; letter-spacing: 2px;">
+            TOYOCARS
+        </text>
+        <text x="50%" y="70%" dominant-baseline="middle" text-anchor="middle"
+              style="font-family: Arial, sans-serif; font-weight: 700; font-size: 32px; fill: #CC0000; letter-spacing: 1px;">
+            REPUESTOS ORIGINALES TOYOTA
+        </text>
+</svg>
