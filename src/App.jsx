@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import './styles/App.css'
 import Navbar from './components/Navbar.jsx'
 import Filters from './components/filters.jsx'
@@ -16,15 +16,22 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedModels, setSelectedModels] = useState([]);
-  const filteredProducts = allProducts.filter(product => {
+
+  const filteredProducts = useMemo(() => 
+      allProducts.filter(product => {
       const matchesSearch = searchQuery === '' || 
       cleanText(product.nombre).includes(cleanText(searchQuery)) ||
       cleanText(product.numero_parte || '').includes(cleanText(searchQuery)) ||
       cleanText(product.descripcion || '').includes(cleanText(searchQuery));
+
       const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(cleanText(product.categoria));
+      
       const matchesModel = selectedModels.length === 0 || selectedModels.includes(cleanText(product.modelo));
+      
       return matchesSearch && matchesCategory && matchesModel;
-    });
+    }),
+    [searchQuery, selectedCategories, selectedModels]);
+    
   return (
     <>
     <header className='headerSticky'>
