@@ -10,6 +10,12 @@
     align-items: start;
 }
 
+.products-grid .pagination-container {
+    grid-column: 1 / -1;
+    align-self: center;
+    justify-self: center;
+}
+
 .products-grid h2 {
     margin: 0 0 20px;
     color: #fff;

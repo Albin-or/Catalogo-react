@@ -2,7 +2,7 @@ import logo from '../assets/logo.svg'
 import searchIcon from '../assets/search-icon.svg'
 import '../styles/navbar.css'
 
-export default function Navbar({ onSearchChange }) {
+export function Navbar({ onSearchChange }) {
   const handleSearchSubmit = (e) => {
     e.preventDefault()
   }

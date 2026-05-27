@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react'
 import './styles/App.css'
-import Navbar from './components/Navbar.jsx'
-import Filters from './components/filters.jsx'
-import ProductList from './components/product-list.jsx'
+import { Navbar } from './components/navbar.jsx'
+import { Filters } from './components/filters.jsx'
+import { ProductList } from './components/product-list.jsx'
 import allProducts from "./data/products.json"
 
 const cleanText = (text = '') => {
@@ -49,5 +49,5 @@ function App() {
     </main>
     </>
   );
-};
-export default App
+}
+export { App }

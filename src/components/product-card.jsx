@@ -1,6 +1,6 @@
 import "../styles/product-card.css"
 
-export default function ProductCard({ product }) {
+export function ProductCard({ product }) {
     return (
         <article className="product-card">
             <a href={product.url} className="product-link">

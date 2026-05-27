@@ -1,6 +1,6 @@
 import "../styles/filters.css";
 
-export default function Filters({ 
+export function Filters({ 
   selectedCategories, 
   setSelectedCategories, 
   selectedModels, 
