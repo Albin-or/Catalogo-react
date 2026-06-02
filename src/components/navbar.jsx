@@ -1,22 +1,23 @@
 import logo from '../assets/logo.svg'
 import searchIcon from '../assets/search-icon.svg'
-import '../styles/navbar.css'
+import styles from './Navbar.module.css'
 
-export function Navbar({ onSearchChange }) {
+export function Navbar({ onSearchChange, setCurrentPage }) {
   const handleSearchSubmit = (e) => {
     e.preventDefault()
   }
   const handleInputChange = (e) => {
     onSearchChange(e.target.value)
+    setCurrentPage(1)
   }
   return (
-    <nav className="navigation">
-        <div className="logo">
+    <nav className={styles.navigation}>
+        <div className={styles.logo}>
             <img src={logo} alt="Toyocars - Repuestos originales Toyota"/>
         </div>
 
-        <form className="search" onSubmit={handleSearchSubmit}>
-            <span className="search-icon" aria-hidden="true">
+        <form className={styles.search} onSubmit={handleSearchSubmit}>
+            <span className={styles.searchIcon} aria-hidden="true">
                 <img src={searchIcon} alt=""/>
             </span>
             

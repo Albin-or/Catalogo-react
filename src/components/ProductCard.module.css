@@ -1,4 +1,4 @@
-.product-card {
+.productCard {
     background: #1e1e1e;
     border-radius: 10px;
     border: 1px solid #2d2d2d;
@@ -9,7 +9,7 @@
     height: 100%;
 }
 
-.product-card .product-link {
+.productLink {
     text-decoration: none;
     color: inherit;
     display: flex;
@@ -17,13 +17,13 @@
     height: 100%;
 }
 
-.product-card:hover {
+.productCard:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
     border-color: #EB0A1E;
 }
 
-.product-image {
+.productImage {
     background: #ffffff;
     height: 140px;
     display: flex;
@@ -34,19 +34,19 @@
     border-bottom: 1px solid #2d2d2d;
 }
 
-.product-image img {
+.productImage img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
 }
 
-.product-image img:not([src]), 
-.product-image img[src=""] {
+.productImage img:not([src]),
+.productImage img[src=""] {
     display: none;
 }
 
-.product-image::after {
+.productImage::after {
     content: "No Image Available";
     font-size: 0.75rem;
     color: #999999;
@@ -56,8 +56,7 @@
     position: absolute;
 }
 
-
-.product-info {
+.productInfo {
     padding: 12px;
     display: flex;
     flex-direction: column;
@@ -66,7 +65,7 @@
     flex-grow: 1;
 }
 
-.product-title {
+.productTitle {
     font-size: 0.92rem;
     font-weight: 700;
     color: #ffffff;
@@ -82,7 +81,7 @@
     height: 2.4em;
 }
 
-.category-tag {
+.categoryTag {
     font-size: 0.65rem;
     text-transform: uppercase;
     color: #EB0A1E;
@@ -90,7 +89,7 @@
     letter-spacing: 0.08em;
 }
 
-.part-number {
+.partNumber {
     font-family: monospace;
     font-size: 0.8rem;
     font-weight: 600;
@@ -110,13 +109,13 @@
     overflow: hidden;
 }
 
-.card-footer {
+.cardFooter {
     margin-top: auto;
     padding-top: 10px;
     border-top: 1px solid #2d2d2d;
 }
 
-.view-details {
+.viewDetails {
     color: #EB0A1E;
     font-size: 0.8rem;
     font-weight: 700;
@@ -125,11 +124,11 @@
     justify-content: space-between;
 }
 
-.view-details::after {
+.viewDetails::after {
     content: "→";
     transition: transform 0.2s ease;
 }
 
-.product-card:hover .view-details::after {
+.productCard:hover .viewDetails::after {
     transform: translateX(4px);
 }

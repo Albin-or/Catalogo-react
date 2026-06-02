@@ -8,7 +8,6 @@
     padding: 24px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.35);
     color: #f5f5f5;
-    /* Ajuste pro: le damos más aire vertical para que no se ahogue el título */
     min-height: 400px;
     height: fit-content;
 }
@@ -28,7 +27,7 @@
     margin-top: 20px;
     margin-bottom: 12px;
     font-size: 0.85rem;
-    color: #A0A0A0; /* Gris plata sutil para jerarquía tipográfica */
+    color: #A0A0A0;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-weight: 700;
@@ -54,7 +53,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #E0E0E0; /* Forzamos un gris claro de alto contraste */
+    color: #E0E0E0;
     font-size: 0.95rem;
     cursor: pointer;
     user-select: none;
@@ -64,7 +63,7 @@
 
 .filters label:hover {
     color: #ffffff;
-    transform: translateX(2px); /* Micro-interacción: el texto se mueve sutilmente a la derecha */
+    transform: translateX(2px);
 }
 
 .filters input[type="checkbox"] {
@@ -74,7 +73,7 @@
     height: 18px;
     min-width: 18px;
     background: #141414;
-    border: 1px solid #443; /* Borde un poco más claro para que sea visible */
+    border: 1px solid #443;
     border-radius: 4px;
     position: relative;
     display: inline-flex;
@@ -113,17 +112,16 @@
     outline-offset: 3px;
 }
 
-.filters .label-text {
-    color: #E0E0E0; /* Gris platino de alto contraste */
+.labelText {
+    color: #E0E0E0;
     font-size: 0.95rem;
     font-weight: 500;
     transition: color 0.2s ease;
 }
 
-.filters label:hover .label-text {
+.filters label:hover .labelText {
     color: #ffffff;
 }
-
 
 @media (max-width: 1024px) {
     .filters {

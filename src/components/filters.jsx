@@ -1,4 +1,4 @@
-import "../styles/filters.css";
+import styles from "./Filters.module.css";
 
 export function Filters({ 
   selectedCategories, 
@@ -33,7 +33,7 @@ export function Filters({
   };
 
   return (
-    <aside className="filters">
+    <aside className={styles.filters}>
       <h2>Filtros</h2>
 
       <h3>Categoría</h3>
@@ -48,7 +48,7 @@ export function Filters({
                 checked={selectedCategories.includes(cleanText(cat.id))}
                 onChange={() => handleCheckboxChange(cat.id, selectedCategories, setSelectedCategories)}
               />
-              <span className="label-text">{cat.label}</span>
+              <span className={styles.labelText}>{cat.label}</span>
             </label>
           </li>
         ))}
@@ -66,7 +66,7 @@ export function Filters({
                 checked={selectedModels.includes(cleanText(model.id))}
                 onChange={() => handleCheckboxChange(model.id, selectedModels, setSelectedModels)}
               />
-              <span className="label-text">{model.label}</span>
+              <span className={styles.labelText}>{model.label}</span>
             </label>
           </li>
         ))}

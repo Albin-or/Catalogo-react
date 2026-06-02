@@ -1,17 +1,17 @@
-import "../styles/product-card.css"
+import styles from "./ProductCard.module.css"
 
 export function ProductCard({ product }) {
     return (
-        <article className="product-card">
-            <a href={product.url} className="product-link">
-                <img className="product-image" src={product.imagen} alt="Imagen del producto"/>
-                <div className="product-info">
-                    <h3 className="product-title">{product.nombre}</h3>
-                    <span className="category-tag">{product.categoria}</span>
-                    <data value={product.numero_parte} className="part-number">Nº Parte: {product.numero_parte}</data>
-                    <p className="description">{product.descripcion}</p>
-                    <footer className="card-footer">
-                        <span className="view-details">Ver detalle</span>
+        <article className={styles.productCard}>
+            <a href={product.url} className={styles.productLink}>
+                <img className={styles.productImage} src={product.imagen} alt="Imagen del producto"/>
+                <div className={styles.productInfo}>
+                    <h3 className={styles.productTitle}>{product.nombre}</h3>
+                    <span className={styles.categoryTag}>{product.categoria}</span>
+                    <data value={product.numero_parte} className={styles.partNumber}>Nº Parte: {product.numero_parte}</data>
+                    <p className={styles.description}>{product.descripcion}</p>
+                    <footer className={styles.cardFooter}>
+                        <span className={styles.viewDetails}>Ver detalle</span>
                     </footer>
                 </div>
             </a>
