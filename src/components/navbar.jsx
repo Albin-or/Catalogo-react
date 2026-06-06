@@ -1,13 +1,14 @@
 import logo from '../assets/logo.svg'
 import searchIcon from '../assets/search-icon.svg'
 import styles from './Navbar.module.css'
+import { cleanText } from '../hooks/useFilters.jsx'
 
 export function Navbar({ onSearchChange, setCurrentPage }) {
   const handleSearchSubmit = (e) => {
     e.preventDefault()
   }
   const handleInputChange = (e) => {
-    onSearchChange(e.target.value)
+    onSearchChange(cleanText(e.target.value))
     setCurrentPage(1)
   }
   return (

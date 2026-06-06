@@ -1,11 +1,11 @@
 import styles from "./Filters.module.css";
+import { cleanText } from '../hooks/useFilters.jsx'
 
 export function Filters({ 
   selectedCategories, 
   setSelectedCategories, 
   selectedModels, 
-  setSelectedModels, 
-  cleanText 
+  setSelectedModels,
 }) {
 
   const categories = [
