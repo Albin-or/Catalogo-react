@@ -6,6 +6,7 @@ export function Filters({
   setSelectedCategories, 
   selectedModels, 
   setSelectedModels,
+  handleCheckboxChange
 }) {
 
   const categories = [
@@ -21,16 +22,6 @@ export function Filters({
     { id: "yaris", label: "Yaris" },
     { id: "camry", label: "Camry" },
   ];
-
-  const handleCheckboxChange = (id, currentSelection, setSelection) => {
-    const cleanedId = cleanText(id);
-    
-    if (currentSelection.includes(cleanedId)) {
-      setSelection(currentSelection.filter(item => item !== cleanedId));
-    } else {
-      setSelection([...currentSelection, cleanedId]);
-    }
-  };
 
   return (
     <aside className={styles.filters}>

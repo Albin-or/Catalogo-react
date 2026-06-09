@@ -1,9 +1,10 @@
 import styles from "./ProductCard.module.css"
+import { Link } from "./Link.jsx"
 
 export function ProductCard({ product }) {
     return (
         <article className={styles.productCard}>
-            <a href={product.url} className={styles.productLink}>
+            <Link to={product.url} className={styles.productLink}>
                 <img className={styles.productImage} src={product.imagen} alt="Imagen del producto"/>
                 <div className={styles.productInfo}>
                     <h3 className={styles.productTitle}>{product.nombre}</h3>
@@ -14,7 +15,7 @@ export function ProductCard({ product }) {
                         <span className={styles.viewDetails}>Ver detalle</span>
                     </footer>
                 </div>
-            </a>
+            </Link>
         </article>
     )
 }

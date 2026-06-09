@@ -1,0 +1,204 @@
+:root {
+  --bg-color: #121212;         /* Fondo principal oscuro */
+  --card-bg: #1e1e1e;          /* Fondo de tarjetas y tablas */
+  --card-border: #2a2a2a;      /* Bordes sutiles */
+  --accent-color: #e50914;     /* Rojo vibrante (estilo Toyota/Deportivo) */
+  --text-main: #f5f5f5;        /* Texto principal claro */
+  --text-muted: #a0a0a0;       /* Texto secundario gris */
+  --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --radius: 8px;               /* Curvatura de bordes */
+  --transition: all 0.3s ease; /* Transición estándar */
+}
+
+/* =========================================
+   2. RESET Y ESTILOS BASE
+   ========================================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  line-height: 1.6;
+  padding: 20px;
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  /* Animación de entrada al cargar la página */
+  animation: fadeIn 0.6s ease-out forwards; 
+}
+
+/* =========================================
+   3. TARJETA DE PRODUCTO PRINCIPAL
+   ========================================= */
+.mainProductCard {
+  display: flex;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transition: var(--transition);
+}
+
+/* Efecto Hover en la tarjeta */
+.mainProductCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(229, 9, 20, 0.15); /* Ligero resplandor rojo */
+  border-color: #333;
+}
+
+.mainProductImage {
+  width: 100%;
+  max-width: 400px;
+  object-fit: cover;
+  background-color: #fff; /* Fondo blanco por si la imagen tiene transparencias */
+  transition: var(--transition);
+}
+
+.mainProductCard:hover .mainProductImage {
+  transform: scale(1.02); /* Pequeño zoom a la imagen */
+}
+
+.mainProductInfo {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.mainProductTitle {
+  font-size: 1.8rem;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 10px;
+  display: inline-block;
+  align-self: flex-start;
+}
+
+.productDetails p {
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+.productDetails strong {
+    color: var(--text-main);
+  font-weight: 600;
+  margin-right: 8px;
+}
+.tableContainer {
+  background-color: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 30px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  overflow-x: auto; /* Permite scroll horizontal en móviles si la tabla es muy ancha */
+  transition: var(--transition);
+}
+
+.tableContainer:hover {
+  border-color: #3a3a3a;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+caption {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--text-main);
+  margin-bottom: 15px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+thead tr {
+  border-bottom: 2px solid var(--accent-color);
+}
+
+th {
+  padding: 15px 10px;
+  color: var(--text-main);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+td {
+  padding: 15px 10px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--card-border);
+  transition: var(--transition);
+}
+
+/* Efecto hover en las filas de la tabla */
+tbody tr {
+  transition: var(--transition);
+}
+
+tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text-main);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================================
+   5. ANIMACIONES (Keyframes)
+   ========================================= */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   6. RESPONSIVE DESIGN (Media Queries)
+   ========================================= */
+@media (max-width: 768px) {
+  .main-product-card {
+    flex-direction: column; /* Apila la imagen arriba y la info abajo */
+  }
+
+  .main-product-image {
+    max-width: 100%;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .main-product-title {
+    font-size: 1.5rem;
+  }
+
+  .table-container {
+    padding: 15px;
+  }
+  
+  th, td {
+    padding: 12px 8px;
+    font-size: 0.9rem;
+  }
+}

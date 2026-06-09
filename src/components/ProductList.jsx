@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react"
 import styles from "./ProductList.module.css"
-import { ProductCard } from "./product-card.jsx"
-import { Pagination } from "./pagination.jsx"
+import { ProductCard } from "./ProductCard.jsx"
+import { Pagination } from "./Pagination.jsx"
 
 export function ProductList({ products, currentPage, setCurrentPage }) {
     const productsPerPage = 10;

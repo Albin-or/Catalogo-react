@@ -13,6 +13,20 @@ export function useFilters(allProducts) {
   const [selectedModels, setSelectedModels] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const handleCheckboxChange = (id, currentSelection, setSelection) => {
+    const cleanedId = cleanText(id);  
+      if (currentSelection.includes(cleanedId)) {
+        setSelection(currentSelection.filter(item => item !== cleanedId));
+      } else {
+        setSelection([...currentSelection, cleanedId]);
+      }
+    };
+
+  const handleInputChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+
   const filteredProducts = useMemo(() => 
       allProducts.filter(product => {
       const matchesSearch = searchQuery === '' || 
@@ -37,6 +51,8 @@ export function useFilters(allProducts) {
 		setSelectedModels,
 		currentPage,
 		setCurrentPage,
-		filteredProducts
+		filteredProducts,
+		handleCheckboxChange,
+		handleInputChange
 	};
 }
