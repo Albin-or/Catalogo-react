@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 
 export const cleanText = (text = '') => {
     return text
@@ -11,6 +11,7 @@ export function useFilters(allProducts) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedModels, setSelectedModels] = useState([]);
+  const timeoutId = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleCheckboxChange = (id, currentSelection, setSelection) => {
@@ -23,8 +24,14 @@ export function useFilters(allProducts) {
     };
 
   const handleInputChange = (e) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
+    const inputValue = e.target.value;
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current);
+    }
+    timeoutId.current = setTimeout(() => {
+      setSearchQuery(inputValue);
+      setCurrentPage(1);
+    }, 300);
   };
 
   const filteredProducts = useMemo(() => 
@@ -41,6 +48,14 @@ export function useFilters(allProducts) {
       return matchesSearch && matchesCategory && matchesModel;
     }),
     [searchQuery, selectedCategories, selectedModels, allProducts]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutId.current) {
+        clearTimeout(timeoutId.current);
+      }
+    };
+  }, [timeoutId]);
 
 	return {
 		searchQuery,

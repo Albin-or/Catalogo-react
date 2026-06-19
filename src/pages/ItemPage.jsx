@@ -1,16 +1,26 @@
 import styles from './ItemPage.module.css'
+import { useRouter } from '../hooks/useRouter.jsx';
+import productData from '../data/products.json';
 
 export function ItemPage() {
+    const { getQueryParam } = useRouter();
+    const partId = getQueryParam('id');
+    const product = productData.find((p) => String(p.id) === String(partId));
+
+    if (!product) {
+        return <main><p>Product not found</p></main>;
+    }
+
     return (
         <main>
             <section className={styles.mainProductCard}>
-                <img className={styles.mainProductImage} alt="Pistones de Corolla 90-98" src="https://http2.mlstatic.com/D_NQ_NP_990338-MLV81142267754_122024-O.webp"/>
+                <img className={styles.mainProductImage} alt="Pistones de Corolla 90-98" src={product.imagen}/>
                 <div className={styles.mainProductInfo}>
-                    <h2 className={styles.mainProductTitle}>Pistones de Corolla 90-98</h2>
+                    <h2 className={styles.mainProductTitle}>{product.nombre}</h2>
                     <div className={styles.productDetails}>
-                        <p><strong>Part Number:</strong> 12345</p>
-                        <p><strong>Description:</strong> Pistones de Corolla 90-98</p>
-                        <p><strong>Category:</strong> Motor</p>
+                        <p><strong>Part Number:</strong> {product.numero_parte}</p>
+                        <p><strong>Description:</strong> {product.descripcion}</p>
+                        <p><strong>Category:</strong> {product.categoria}</p>
                     </div>
                 </div>
             </section>

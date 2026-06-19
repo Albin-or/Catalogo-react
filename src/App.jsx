@@ -11,9 +11,8 @@ function App() {
       <header className={styles.headerSticky}>
         <Navbar />
       </header>
-    <ItemPage />
-    {/*<Route path="/" component={HomePage} />
-      <Route path="/item.html?id=1" component={ItemPage} />*/}
+      <Route path="/" component={HomePage} />
+      <Route path="/product" component={ItemPage} />
     </FiltersProvider>
   );
 }

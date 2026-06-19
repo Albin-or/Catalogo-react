@@ -2,6 +2,7 @@ import logo from '../assets/logo.svg'
 import searchIcon from '../assets/search-icon.svg'
 import styles from './Navbar.module.css'
 import { useFiltersContext } from './FiltersContext.jsx'
+import { Link } from './Link.jsx'
 
 export function Navbar() {
   const { searchQuery, handleInputChange } = useFiltersContext();
@@ -11,9 +12,9 @@ export function Navbar() {
 
   return (
     <nav className={styles.navigation}>
-        <div className={styles.logo}>
-            <img src={logo} alt="Toyocars - Repuestos originales Toyota"/>
-        </div>
+      <Link to="/" className={styles.logo}>
+        <img src={logo} alt="Toyocars - Repuestos originales Toyota"/>
+      </Link>
 
         <form className={styles.search} onSubmit={handleSearchSubmit}>
             <span className={styles.searchIcon} aria-hidden="true">
@@ -23,7 +24,6 @@ export function Navbar() {
             <input 
               id="search-parts"
               type="search" 
-              value={searchQuery}
               placeholder="Número de pieza / Descripción / Categoría"
               aria-label="Buscar repuestos Toyota"
               onChange={handleInputChange}

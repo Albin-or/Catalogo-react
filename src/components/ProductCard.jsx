@@ -2,9 +2,15 @@ import styles from "./ProductCard.module.css"
 import { Link } from "./Link.jsx"
 
 export function ProductCard({ product }) {
+    const buildProductURL = (product) => {
+        const url = new URL(window.location.href);
+        url.pathname = `/product`;
+        url.searchParams.set('id', product.id);
+        return url.pathname + url.search;
+    }
     return (
         <article className={styles.productCard}>
-            <Link to={product.url} className={styles.productLink}>
+            <Link to={buildProductURL(product)} className={styles.productLink}>
                 <img className={styles.productImage} src={product.imagen} alt="Imagen del producto"/>
                 <div className={styles.productInfo}>
                     <h3 className={styles.productTitle}>{product.nombre}</h3>
