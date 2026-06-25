@@ -9,6 +9,11 @@ export function ProductCard({ product }) {
         url.searchParams.set('id', product.id);
         return url.pathname + url.search;
     }
+
+    const totalQuantity = Array.isArray(product?.product_brands)
+        ? product.product_brands.reduce((sum, brand) => sum + Number(brand?.cantidad || 0), 0)
+        : 0;
+
     return (
         <article className={styles.productCard}>
             <Link to={buildProductURL(product)} className={styles.productLink}>
@@ -17,7 +22,7 @@ export function ProductCard({ product }) {
                     <h3 className={styles.productTitle}>{product.nombre}</h3>
                     <span className={styles.categoryTag}>{product.categoria}</span>
                     <data value={product.numero_parte} className={styles.partNumber}>Nº Parte: {product.numero_parte}</data>
-                    <p className={styles.description}>{product.descripcion}</p>
+                    <p className={styles.partNumber}>Cantidad: {totalQuantity}</p>
                     <footer className={styles.cardFooter}>
                         <span className={styles.viewDetails}>Ver detalle</span>
                     </footer>

@@ -32,6 +32,7 @@ export function Navbar() {
             
             <button type="submit">Buscar</button>
         </form>
+      <Link to="/addItem" className={styles.addItemButton}>Añadir Producto</Link>
     </nav>
   )
 }

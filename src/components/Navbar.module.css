@@ -109,6 +109,31 @@
     box-shadow: 0 12px 24px rgba(235,10,30,0.2);
 }
 
+.addItemButton {
+    background: #EB0A1E;
+    max-height: 60px;
+    max-width: 120px;
+    color: #fff;
+    text-align: center;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform var(--transition, 0.2s), background var(--transition, 0.2s), box-shadow var(--transition, 0.2s);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    text-decoration: none; /* Ensure the link has no underline */
+}
+.addItemButton:hover,
+.addItemButton:focus-visible {
+    background: #ff2d35;
+    outline: none;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(235,10,30,0.2);
+}
+
 @media (max-width: 768px) {
     .navigation {
         flex-wrap: wrap;
@@ -133,6 +158,11 @@
     }
 
     .search button {
+        padding: 10px 16px;
+    }
+    .addItemButton {
+        max-width: 100%;
+        width: 100%;
         padding: 10px 16px;
     }
 }

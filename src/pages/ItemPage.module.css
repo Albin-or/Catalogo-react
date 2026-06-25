@@ -46,6 +46,7 @@ main {
   margin-bottom: 40px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   transition: var(--transition);
+  position: relative;
 }
 
 /* Efecto Hover en la tarjeta */
@@ -53,6 +54,69 @@ main {
   transform: translateY(-5px);
   box-shadow: 0 8px 30px rgba(229, 9, 20, 0.15); /* Ligero resplandor rojo */
   border-color: #333;
+}
+
+.editButton {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 700;
+  transition: var(--transition);
+  font-size: 0.8rem;
+  text-align: center;
+  min-height: 38px;
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.2);
+}
+
+.editButton:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.detailActionButton,
+.deleteButton {
+  position: absolute;
+  top: 15px;
+  max-width: 80px;
+}
+
+.detailActionButton {
+  right: 15px;
+}
+
+.deleteButton {
+  right: 105px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.saveButton {
+  background: #1f9d5a;
+  box-shadow: 0 4px 12px rgba(31, 157, 90, 0.2);
+}
+
+.cancelButton {
+  background: #5b6472;
+  box-shadow: 0 4px 12px rgba(91, 100, 114, 0.2);
+}
+
+.deleteButton {
+  background: var(--accent-color);
+  box-shadow: 0 4px 12px rgba(180, 35, 24, 0.2);
+}
+
+.saveFeedback {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  color: #7ee7a8;
 }
 
 .mainProductImage {
@@ -87,17 +151,85 @@ main {
   align-self: flex-start;
 }
 
+.productDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .productDetails p {
-  margin-bottom: 12px;
-  font-size: 1.1rem;
+  margin-bottom: 0;
+  font-size: 1.05rem;
   color: var(--text-muted);
+  text-transform: capitalize;
 }
 
 .productDetails strong {
-    color: var(--text-main);
+  color: var(--text-main);
   font-weight: 600;
   margin-right: 8px;
 }
+
+.fieldRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.fieldColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.editTitleInput {
+  width: 100%;
+  background: #151515;
+  color: var(--text-main);
+  border: 1px solid #3b3b3b;
+  padding: 8px 10px;
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+  border-radius: 6px;
+}
+
+.editInput,
+.editTextarea,
+.editSelect,
+.tableInput,
+.tableSelect {
+  background: #151515;
+  color: var(--text-main);
+  border: 1px solid #3b3b3b;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font: inherit;
+}
+
+.editInput,
+.tableInput {
+  min-width: 120px;
+}
+
+.editTextarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+}
+
+.editSelect,
+.tableSelect {
+  min-width: 140px;
+}
+
+.tableInput,
+.tableSelect {
+  width: 100%;
+  min-width: 90px;
+}
+
 .tableContainer {
   background-color: var(--card-bg);
   border-radius: var(--radius);
@@ -180,20 +312,26 @@ tbody tr:last-child td {
    6. RESPONSIVE DESIGN (Media Queries)
    ========================================= */
 @media (max-width: 768px) {
-  .main-product-card {
-    flex-direction: column; /* Apila la imagen arriba y la info abajo */
+  .mainProductCard {
+    flex-direction: column;
   }
 
-  .main-product-image {
+  .mainProductImage {
     max-width: 100%;
     border-bottom: 1px solid var(--card-border);
   }
 
-  .main-product-title {
+  .mainProductTitle {
     font-size: 1.5rem;
   }
 
-  .table-container {
+  .detailActionButton {
+    position: static;
+    margin-top: 12px;
+    align-self: flex-start;
+  }
+
+  .tableContainer {
     padding: 15px;
   }
   
