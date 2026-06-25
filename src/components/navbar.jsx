@@ -22,6 +22,7 @@ export function Navbar() {
             </span>
             
             <input 
+              defaultValue={searchQuery}
               id="search-parts"
               type="search" 
               placeholder="Número de pieza / Descripción / Categoría"

@@ -3,7 +3,8 @@ import { ItemPage } from './pages/ItemPage.jsx'
 import styles from './components/App.module.css'
 import { Navbar } from './components/Navbar.jsx'
 import { FiltersProvider } from './components/FiltersContext.jsx'
-import { Route } from './components/Route.jsx'
+import { Routes, Route } from 'react-router'
+import { NotFoundPage } from './pages/NotFoundPage.jsx'
 
 function App() {
   return (
@@ -11,8 +12,11 @@ function App() {
       <header className={styles.headerSticky}>
         <Navbar />
       </header>
-      <Route path="/" component={HomePage} />
-      <Route path="/product" component={ItemPage} />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/product" element={<ItemPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
     </FiltersProvider>
   );
 }

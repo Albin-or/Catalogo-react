@@ -1,0 +1,75 @@
+.notFoundPage {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
+.card {
+  width: min(100%, 580px);
+  padding: 64px 48px;
+  /* Un tono un poco más claro que el fondo de la página */
+  background: var(--surface); 
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: background var(--transition);
+}
+
+.code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 28px;
+  border-radius: 50%;
+  /* Fondo sutil con el rojo de tu marca */
+  background: rgba(235, 10, 30, 0.08); 
+  color: var(--accent);
+  font-size: 3.5rem;
+  /* Peso visual fuerte similar al título 'Resultados' */
+  font-weight: 800; 
+  letter-spacing: -0.02em;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.description {
+  margin: 0 auto;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  max-width: 420px;
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 48px 24px;
+    border-radius: var(--radius-sm);
+  }
+
+  .code {
+    width: 100px;
+    height: 100px;
+    font-size: 2.8rem;
+    margin-bottom: 24px;
+  }
+}

@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 
 export const cleanText = (text = '') => {
     return text
@@ -8,18 +9,38 @@ export const cleanText = (text = '') => {
 };
 
 export function useFilters(allProducts) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedModels, setSelectedModels] = useState([]);
-  const timeoutId = useRef(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleCheckboxChange = (id, currentSelection, setSelection) => {
+  const searchQuery = searchParams.get('search') || '';
+  const selectedCategories = searchParams.get('categories') ? searchParams.get('categories').split(',') : [];
+  const selectedModels = searchParams.get('models') ? searchParams.get('models').split(',') : [];
+  const currentPage = searchParams.get('page') ? parseInt(searchParams.get('page'), 10) : 1;
+
+  const timeoutId = useRef(null);
+
+  const updateSearchParams = (key, value) => {
+    setSearchParams(params => {
+      const newParams = new URLSearchParams(params);
+      if (value && value.length > 0) {
+        newParams.set(key, Array.isArray(value) ? value.join(',') : value);
+        
+      }
+      else {
+        newParams.delete(key);
+      }
+      if (key !== 'page') {
+        newParams.delete('page');
+      }
+      return newParams;
+    });
+  };
+
+  const handleCheckboxChange = (id, currentSelection, filterType) => {
     const cleanedId = cleanText(id);  
       if (currentSelection.includes(cleanedId)) {
-        setSelection(currentSelection.filter(item => item !== cleanedId));
+        updateSearchParams(filterType, currentSelection.filter(item => item !== cleanedId));
       } else {
-        setSelection([...currentSelection, cleanedId]);
+        updateSearchParams(filterType, [...currentSelection, cleanedId]);
       }
     };
 
@@ -29,8 +50,7 @@ export function useFilters(allProducts) {
       clearTimeout(timeoutId.current);
     }
     timeoutId.current = setTimeout(() => {
-      setSearchQuery(inputValue);
-      setCurrentPage(1);
+      updateSearchParams('search', inputValue);
     }, 300);
   };
 
@@ -59,14 +79,11 @@ export function useFilters(allProducts) {
 
 	return {
 		searchQuery,
-		setSearchQuery,
 		selectedCategories,
-		setSelectedCategories,
 		selectedModels,
-		setSelectedModels,
 		currentPage,
-		setCurrentPage,
 		filteredProducts,
+    updateSearchParams,
 		handleCheckboxChange,
 		handleInputChange
 	};
