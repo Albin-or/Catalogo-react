@@ -108,3 +108,31 @@
     transform: translateY(-1px);
     box-shadow: 0 12px 24px rgba(235,10,30,0.2);
 }
+
+@media (max-width: 768px) {
+    .navigation {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        padding: 12px 16px;
+        min-height: auto;
+        max-height: none;
+    }
+
+    .logo {
+        display: none;
+    }
+
+    .search {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .searchIcon {
+        margin-right: 8px;
+    }
+
+    .search button {
+        padding: 10px 16px;
+    }
+}
