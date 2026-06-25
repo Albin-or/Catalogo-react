@@ -1,11 +1,12 @@
 import { createContext, useContext } from 'react';
 import { useFilters } from '../hooks/useFilters.jsx';
-import allProducts from "../data/products.json"
+import { useInventory } from "../hooks/useInventory.jsx";
 
 const FiltersContext = createContext();
 
 export function FiltersProvider({ children }) {
-    const filters = useFilters(allProducts);
+    const { products } = useInventory();
+    const filters = useFilters(products);
     return (
         <FiltersContext.Provider value={filters}>
             {children}

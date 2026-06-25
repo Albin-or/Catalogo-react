@@ -1,11 +1,12 @@
 import styles from './ItemPage.module.css'
 import { useRouter } from '../hooks/useRouter.jsx';
-import productData from '../data/products.json';
+import { useInventory } from '../hooks/useInventory.jsx';
 
 export function ItemPage() {
     const { getQueryParam } = useRouter();
     const partId = getQueryParam('id');
-    const product = productData.find((p) => String(p.id) === String(partId));
+    const { products } = useInventory();
+    const product = products.find((p) => String(p.id) === String(partId));
 
     if (!product) {
         return <main><p>Product not found</p></main>;
