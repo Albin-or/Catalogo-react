@@ -45,6 +45,38 @@
   color: var(--text-muted);
 }
 
+.checkboxGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+}
+
+.checkboxLabel:hover {
+  transform: translateY(-1px);
+}
+
+.checkboxLabel input {
+  accent-color: var(--accent);
+}
+
+.checkboxLabel input:checked + span {
+  color: var(--text);
+  font-weight: 700;
+}
+
 .input {
   width: 100%;
   padding: 10px 12px;

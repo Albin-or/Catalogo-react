@@ -1,185 +1,198 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';  
 import { supabase } from '../supabaseClient';
 
-export function useInventory() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export function useInventory() {  
+  const [products, setProducts] = useState([]);  
+  const [models, setModels] = useState([]);  
+  const [categories, setCategories] = useState([]);  
+  const [stores, setStores] = useState([]);
+
+  const [loading, setLoading] = useState(true);  
+  const [isSubmitting, setIsSubmitting] = useState(false);  
   const [error, setError] = useState(null);
 
-    const models = [
-    { id: 'corolla', label: 'Corolla' },
-    { id: 'yaris', label: 'Yaris' },
-    { id: 'camry', label: 'Camry' },
-    { id: 'terios', label: 'Terios' },
-    { id: 'starlet', label: 'Starlet' },
-    { id: 'hilux', label: 'Hilux' },
-    { id: 'fortuner', label: 'Fortuner' },
-    { id: '4runner', label: '4Runner' },
-    { id: 'meru', label: 'Meru' },
-    { id: 'prado', label: 'Prado' },
-    { id: 'autana', label: 'Autana' },
-    { id: 'landcruiser', label: 'Land Cruiser' }
-  ];
-
-  const categories = [
-    { id: 'filtros', label: 'Filtros' },
-    { id: 'aceite', label: 'Aceite' },
-    { id: 'motor', label: 'Motor' },
-    { id: 'suspension', label: 'Suspensión' },
-    { id: 'gasolina', label: 'Gasolina' },
-    { id: 'electrico', label: 'Eléctrico' },
-    { id: 'croche', label: 'Embragues / Croches' },
-    { id: 'direccion', label: 'Dirección hidraulica' },
-    { id: 'carroceria', label: 'Carrocería' },
-    { id: 'otros', label: 'Otros' },
-  ];
-
-  const stores = [
-    { id: 'almacen1', label: 'Almacén Toyosur' },
-    { id: 'almacen2', label: 'Toyocars Delicias' },
-  ];
-
-  const normalizeBrandData = (brand, productId) => ({
-    product_id: productId,
-    marca: brand?.marca ?? '',
-    precio1: Number(brand?.precio1) || 0,
-    precio2: Number(brand?.precio2) || 0,
-    cantidad: Number(brand?.cantidad) || 0,
-    almacen: brand?.almacen ?? '',
+  // Helper para normalizar los datos del inventario (product_stocks)  
+  const normalizeStockData = (stock, productId) => ({  
+    product_id: productId,  
+    brand_id: Number(stock?.brand_id),  
+    store_id: stock?.store_id ?? '',  
+    price_1: Number(stock?.price_1) || 0,  
+    price_2: Number(stock?.price_2) || 0,  
+    quantity: Number(stock?.quantity) || 0,  
   });
-  
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data, error: supabaseError } = await supabase
-        .from('products')
-        .select(`
-          id,
-          numero_parte,
-          nombre,
-          descripcion,
-          modelo,
-          categoria,
-          imagen,
-          imagen,
-          created_at,
-          product_brands (
-            id,
-            marca,
-            precio1,
-            precio2,
-            cantidad,
-            almacen
-          )
-        `)
-        .order('created_at', { ascending: false });
 
-      if (supabaseError) throw supabaseError;
-      setProducts(data || []);
-    } catch (err) {
-      console.error(err);
-      setError(err.message || 'Error al cargar los productos');
-    } finally {
-      setLoading(false);
-    }
+  // 1. Cargar Catálogos Iniciales (Modelos, Categorías, Almacenes)  
+  const fetchMetadata = useCallback(async () => {  
+    try {  
+      const [modelsRes, categoriesRes, storesRes] = await Promise.all([  
+        supabase.from('models').select('id, label').order('label'),  
+        supabase.from('categories').select('id, label').order('label'),  
+        supabase.from('stores').select('id, label').order('label')  
+      ]);
+
+      if (modelsRes.error) throw modelsRes.error;  
+      if (categoriesRes.error) throw categoriesRes.error;  
+      if (storesRes.error) throw storesRes.error;
+
+      setModels(modelsRes.data || []);  
+      setCategories(categoriesRes.data || []);  
+      setStores(storesRes.data || []);  
+    } catch (err) {  
+      console.error('Error cargando catálogos:', err);  
+      setError(err.message || 'Error al cargar catálogos iniciales');  
+    }  
   }, []);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-  
-  const addProduct = async (productData) => {
-    setIsSubmitting(true);
-    setError(null);
-    try {
-      const { product_brands, almacen: _productStore, ...newProduct } = productData;
-      const normalizedProduct = {
-        ...newProduct,
-        imagen: newProduct?.imagen?.trim() || null,
+  // 2. Cargar Productos con sus Existencias y Marcas (Relación Anidada)  
+  const fetchProducts = useCallback(async () => {  
+    setLoading(true);  
+    setError(null);  
+    try {  
+      const { data, error: supabaseError } = await supabase  
+        .from('products')  
+        .select(`
+          id, 
+          part_number, 
+          name, 
+          description, 
+          model_id, 
+          model_ids, 
+          category_id, 
+          image_url, 
+          created_at, 
+          product_stocks ( 
+            id, 
+            brand_id, 
+            store_id, 
+            price_1, 
+            price_2, 
+            quantity, 
+            brands ( id, name ) 
+          )
+        `)  
+        .order('created_at', { ascending: false });
+
+      if (supabaseError) throw supabaseError;  
+      setProducts(data || []);  
+    } catch (err) {  
+      console.error(err);  
+      setError(err.message || 'Error al cargar los productos');  
+    } finally {  
+      setLoading(false);  
+    }  
+  }, []);
+
+  // Inicialización de datos al montar el componente  
+  useEffect(() => {  
+    async function init() {  
+      await fetchMetadata();  
+      await fetchProducts();  
+    }  
+    init();  
+  }, [fetchMetadata, fetchProducts]);
+
+  // 3. Añadir Producto Nuevo con sus Existencias  
+  const addProduct = async (productData) => {  
+    setIsSubmitting(true);  
+    setError(null);  
+    try {  
+      const { product_stocks, ...newProduct } = productData;
+
+      const selectedModelIds = Array.isArray(productData.model_ids)
+        ? Array.from(new Set(productData.model_ids.map(id => String(id)).filter(Boolean)))
+        : [];
+
+      const normalizedProduct = {  
+        part_number: newProduct.part_number,  
+        name: newProduct.name,  
+        description: newProduct.description,  
+        model_id: selectedModelIds[0] || newProduct.model_id || null,  
+        model_ids: selectedModelIds,
+        category_id: newProduct.category_id,  
+        image_url: newProduct?.image_url?.trim() || null,  
       };
 
-      const { data: mainProduct, error: prodError } = await supabase
-        .from('products')
-        .insert([normalizedProduct])
-        .select()
+      const { data: mainProduct, error: prodError } = await supabase 
+        .from('products') 
+        .insert([normalizedProduct]) 
+        .select() 
         .single();
 
       if (prodError) throw prodError;
-      
-      let finalBrands = [];
-      
-      if (product_brands && product_brands.length > 0) {
-        const brandsWithId = product_brands.map((brand) => normalizeBrandData(brand, mainProduct.id));
 
-        const { data: insertedBrands, error: brandsError } = await supabase
-          .from('product_brands')
-          .insert(brandsWithId)
-          .select();
+      let finalStocks = [];  
+      if (product_stocks && product_stocks.length > 0) {  
+        const stocksWithId = product_stocks.map((stock) => normalizeStockData(stock, mainProduct.id));  
+        const { data: insertedStocks, error: stocksError } = await supabase  
+          .from('product_stocks')  
+          .insert(stocksWithId)  
+          .select(`
+            id, 
+            brand_id, 
+            store_id, 
+            price_1, 
+            price_2, 
+            quantity, 
+            brands ( id, name )
+          `);
 
-        if (brandsError) throw brandsError;
-        finalBrands = insertedBrands || [];
+        if (stocksError) throw stocksError;  
+        finalStocks = insertedStocks || [];  
       }
 
-      const fullProduct = { ...mainProduct, product_brands: finalBrands };
-      setProducts(prevProducts => [fullProduct, ...prevProducts]);
-      return { success: true };
-
-    } catch (err) {
-      console.error(err);
-      setError(err.message || 'Error al añadir el producto');
-      return { success: false, error: err };
-    } finally {
-      setIsSubmitting(false);
-    }
+      const fullProduct = { ...mainProduct, product_stocks: finalStocks };  
+      setProducts(prevProducts => [fullProduct, ...prevProducts]);  
+      return { success: true };  
+    } catch (err) {  
+      console.error(err);  
+      setError(err.message || 'Error al añadir el producto');  
+      return { success: false, error: err };  
+    } finally {  
+      setIsSubmitting(false);  
+    }  
   };
 
+  // 4. Actualizar Producto e Inventario  
   const updateProduct = async (updatedProduct) => {
     setIsSubmitting(true);
     setError(null);
     try {
-      const { id, product_brands, almacen: _productStore, ...payload } = updatedProduct;
+      const { id, ...payload } = updatedProduct;
+
+      // Saneamos los datos para actualizar ÚNICAMENTE la información del producto
+      const normalizedPayload = {
+        part_number: payload.part_number,
+        name: payload.name,
+        description: payload.description,
+        model_id: payload.model_id,
+        category_id: payload.category_id,
+        image_url: payload?.image_url?.trim() || null,
+      };
 
       const { data: mainProductData, error: prodError } = await supabase
         .from('products')
-        .update(payload)
+        .update(normalizedPayload)
         .eq('id', id)
         .select();
 
       if (prodError) throw prodError;
-
-      const mainProduct = Array.isArray(mainProductData) && mainProductData.length > 0
-        ? mainProductData[0]
-        : { id, ...payload };
-
-      const { error: deleteError } = await supabase
-        .from('product_brands')
-        .delete()
-        .eq('product_id', id);
-
-      if (deleteError) throw deleteError;
-
-      let finalBrands = [];
       
-      if (product_brands && product_brands.length > 0) {
-        const brandsWithId = product_brands.map((brand) => normalizeBrandData(brand, id));
+      const updatedMainProduct = Array.isArray(mainProductData) && mainProductData.length > 0 
+        ? mainProductData[0] 
+        : { id, ...normalizedPayload };
 
-        const { data: insertedBrands, error: brandsError } = await supabase
-          .from('product_brands')
-          .insert(brandsWithId)
-          .select();
+      // Actualizamos el estado local mezclando la info base nueva con el stock que ya existía
+      setProducts(prevProducts => prevProducts.map(p => {
+        if (p.id === id) {
+          return {
+            ...p,                 // Conserva intacto el arreglo 'product_stocks' actual
+            ...updatedMainProduct // Pisa los datos base editados (nombre, nro de parte, etc.)
+          };
+        }
+        return p;
+      }));
 
-        if (brandsError) throw brandsError;
-        finalBrands = insertedBrands || [];
-      }
-
-      const fullProduct = { ...mainProduct, product_brands: finalBrands };
-      setProducts(prevProducts => 
-        prevProducts.map(p => p.id === id ? fullProduct : p)
-      );
       return { success: true };
-
     } catch (err) {
       console.error(err);
       setError(err.message || 'Error al actualizar el producto');
@@ -189,84 +202,80 @@ export function useInventory() {
     }
   };
 
-  const deleteProduct = async (productId) => {
-    setError(null);
-    try {
-      const { error: supabaseError } = await supabase
-        .from('products')
-        .delete()
+  // 5. Eliminar Producto (Borra existencias automáticamente por CASCADE)  
+  const deleteProduct = async (productId) => {  
+    setError(null);  
+    try {  
+      const { error: supabaseError } = await supabase  
+        .from('products')  
+        .delete()  
         .eq('id', productId);
+
+      if (supabaseError) throw supabaseError;  
+      setProducts(prevProducts => prevProducts.filter(p => p.id !== productId));  
+      return { success: true };  
+    } catch (err) {  
+      console.error(err);  
+      setError(err.message || 'Error al eliminar el producto');  
+      return { success: false, error: err };  
+    }  
+  };
+
+  // 6. Añadir una existencia directa de Almacén/Marca a un producto existente  
+  const addStockToProduct = async (productId, stockData) => {  
+    setIsSubmitting(true);  
+    setError(null);  
+    try {  
+      const newStockRow = normalizeStockData(stockData, productId);
+
+      const { data, error: supabaseError } = await supabase  
+        .from('product_stocks')  
+        .insert([newStockRow])  
+        .select(`
+          id, 
+          brand_id, 
+          store_id, 
+          price_1, 
+          price_2, 
+          quantity, 
+          brands ( id, name )
+        `)  
+        .single();
 
       if (supabaseError) throw supabaseError;
 
-      setProducts(prevProducts => prevProducts.filter(p => p.id !== productId));
-      return { success: true };
-    } catch (err) {
-      console.error(err);
-      setError(err.message || 'Error al eliminar el producto');
-      return { success: false, error: err };
-    }
+      setProducts(prevProducts => prevProducts.map(product => {  
+        if (product.id === productId) {  
+          return {  
+            ...product,  
+            product_stocks: [...(product.product_stocks || []), data]  
+          };  
+        }  
+        return product;  
+      }));
+
+      return { success: true, data };  
+    } catch (err) {  
+      console.error(err);  
+      setError(err.message || 'Error al añadir inventario');  
+      return { success: false, error: err };  
+    } finally {  
+      setIsSubmitting(false);  
+    }  
   };
-  
-  const addBrandToProduct = async (productId, brandData) => {
-  setIsSubmitting(true);
-  setError(null);
-  try {
-    // 1. Estructuramos el nuevo registro apuntando al producto
-    const newBrandRow = {
-      product_id: productId,
-      marca: brandData?.marca ?? '',
-      precio1: Number(brandData?.precio1) || 0,
-      precio2: Number(brandData?.precio2) || 0,
-      cantidad: Number(brandData?.cantidad) || 0,
-    };
 
-    // 2. Insertamos la nueva fila directamente en la tabla de marcas
-    const { data, error: supabaseError } = await supabase
-      .from('product_brands')
-      .insert([newBrandRow])
-      .select()
-      .single();
-
-    if (supabaseError) throw supabaseError;
-
-    // 3. Actualizamos el estado local de React de forma inmutable
-    setProducts(prevProducts =>
-      prevProducts.map(product => {
-        if (product.id === productId) {
-          return {
-            ...product,
-            // Mantenemos las marcas existentes y adicionamos la nueva que devolvió Supabase
-            product_brands: [...(product.product_brands || []), data]
-          };
-        }
-        return product;
-      })
-    );
-
-    return { success: true, data };
-  } catch (err) {
-    console.error(err);
-    setError(err.message || 'Error al añadir la marca');
-    return { success: false, error: err };
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-
-  return { 
-    products, 
-    loading, 
-    isSubmitting, 
-    error,
-    stores,
-    categories,
-    models, 
-    refetch: fetchProducts,
-    addProduct, 
-    updateProduct, 
-    deleteProduct,
-    addBrandToProduct 
-  };
+  return {  
+    products,  
+    models,  
+    categories,  
+    stores,  
+    loading,  
+    isSubmitting,  
+    error,  
+    refetch: fetchProducts,  
+    addProduct,  
+    updateProduct,  
+    deleteProduct,  
+    addStockToProduct  
+  };  
 }

@@ -1,22 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useInventory } from '../hooks/useInventory.jsx';
+import { supabase } from '../supabaseClient';
 import styles from './AddItemPage.module.css';
 
 export function AddItemPage() {
-  const { isSubmitting, error, stores, categories, models, addProduct, addBrandToProduct } = useInventory();
+  const { isSubmitting, error, stores, categories, models, addProduct } = useInventory();
+  const [availableBrands, setAvailableBrands] = useState([]);
 
   const initialFormState = {
-    nombre: '',
-    numero_parte: '',
-    modelo: [],
-    categoria: '',
-    almacen: '',
-    descripcion: '',
-    imagen: '',
-    product_brands: [{ marca: '', precio1: '', precio2: '', cantidad: '', almacen: '' }]
+    name: '',
+    part_number: '',
+    model_id: '',
+    model_ids: [],
+    category_id: '',
+    description: '',
+    image_url: '',
+    product_stocks: [{ brand_id: '', price_1: '', price_2: '', quantity: '', store_id: '' }]
   };
 
   const [formData, setFormData] = useState(initialFormState);
+
+  // Cargar el catálogo de marcas para el selector de las filas desde la base de datos
+  useEffect(() => {
+    async function loadBrands() {
+      const { data } = await supabase.from('brands').select('id, name').order('name');
+      if (data) setAvailableBrands(data);
+    }
+    loadBrands();
+  }, []);
 
   // Manejar cambios en los campos generales del producto
   const handleProductChange = (e) => {
@@ -24,41 +35,44 @@ export function AddItemPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleModelChange = (modelId) => {
+  // Manejar cambios en las filas dinámicas de inventario
+  const handleStockChange = (index, field, value) => {
     setFormData(prev => {
-      const selectedModels = prev.modelo || [];
-      const isSelected = selectedModels.includes(modelId);
-      const updatedModels = isSelected
-        ? selectedModels.filter((id) => id !== modelId)
-        : [...selectedModels, modelId];
-
-      return { ...prev, modelo: updatedModels };
+      const updatedStocks = [...prev.product_stocks];
+      updatedStocks[index] = { ...updatedStocks[index], [field]: value };
+      return { ...prev, product_stocks: updatedStocks };
     });
   };
 
-  // Manejar cambios en las filas dinámicas de las marcas
-  const handleBrandChange = (index, field, value) => {
+  const handleModelSelect = (modelId) => {
     setFormData(prev => {
-      const updatedBrands = [...prev.product_brands];
-      updatedBrands[index] = { ...updatedBrands[index], [field]: value };
-      return { ...prev, product_brands: updatedBrands };
+      const isSelected = prev.model_ids.some(id => String(id) === String(modelId));
+      const selectedIds = isSelected
+        ? prev.model_ids.filter(id => String(id) !== String(modelId))
+        : [...prev.model_ids, modelId];
+
+      return {
+        ...prev,
+        model_ids: selectedIds,
+        model_id: selectedIds[0] || ''
+      };
     });
   };
 
-  // Añadir una nueva fila de marca vacía al formulario
-  const addBrandRow = () => {
+  // Añadir una nueva fila de inventario vacía
+  const addStockRow = () => {
     setFormData(prev => ({
       ...prev,
-      product_brands: [...prev.product_brands, { marca: '', precio1: '', precio2: '', cantidad: '', almacen: '' }]
+      product_stocks: [...prev.product_stocks, { brand_id: '', price_1: '', price_2: '', quantity: '', store_id: '' }]
     }));
   };
 
-  // Eliminar una fila de marca del formulario
-  const removeBrandRow = (index) => {
-    if (formData.product_brands.length === 1) return; // Mantiene al menos una fila obligatoria
+  // Eliminar una fila de inventario
+  const removeStockRow = (index) => {
+    if (formData.product_stocks.length === 1) return;
     setFormData(prev => ({
       ...prev,
-      product_brands: prev.product_brands.filter((_, i) => i !== index)
+      product_stocks: prev.product_stocks.filter((_, i) => i !== index)
     }));
   };
 
@@ -66,40 +80,43 @@ export function AddItemPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const trimmedName = formData.nombre?.trim();
-    const trimmedPartNumber = formData.numero_parte?.trim();
-    const hasSelectedModel = (formData.modelo || []).length > 0;
-    const hasSelectedCategory = Boolean(formData.categoria?.trim());
-    const hasSelectedStore = Boolean(formData.almacen?.trim());
-    const hasValidBrand = formData.product_brands.some((brand) => brand?.marca?.trim());
+    const trimmedName = formData.name?.trim();
+    const trimmedPartNumber = formData.part_number?.trim();
+    const hasSelectedModel = Array.isArray(formData.model_ids) && formData.model_ids.length > 0;
+    const hasSelectedCategory = Boolean(formData.category_id);
+    
+    // Validar que todas las filas de inventario tengan marca y almacén seleccionados
+    const hasValidStocks = formData.product_stocks.every(
+      stock => Boolean(stock.brand_id) && Boolean(stock.store_id)
+    );
 
-    if (!trimmedName || !trimmedPartNumber || !hasSelectedModel || !hasSelectedCategory || !hasSelectedStore || !hasValidBrand) {
-      alert('Los campos Nombre del producto, Número de parte, Modelo, Categoría, Almacén y Marca son obligatorios.');
+    if (!trimmedName || !trimmedPartNumber || !hasSelectedModel || !hasSelectedCategory || !hasValidStocks) {
+      alert('Los campos Nombre, Número de Parte, Modelo, Categoría y todas las Marcas/Almacenes seleccionados son obligatorios.');
       return;
     }
 
     const payload = {
-      ...formData,
-      nombre: formData.nombre?.trim(),
-      numero_parte: formData.numero_parte?.trim(),
-      categoria: formData.categoria?.trim(),
-      almacen: formData.almacen?.trim(),
-      descripcion: formData.descripcion?.trim() || '',
-      imagen: formData.imagen?.trim() || null,
-      product_brands: formData.product_brands.map((brand) => ({
-        ...brand,
-        marca: brand?.marca?.trim() || '',
-        precio1: brand?.precio1 ?? '',
-        precio2: brand?.precio2 ?? '',
-        cantidad: brand?.cantidad ?? ''
+      name: trimmedName,
+      part_number: trimmedPartNumber,
+      model_id: formData.model_ids[0] || '',
+      model_ids: formData.model_ids,
+      category_id: formData.category_id,
+      description: formData.description?.trim() || '',
+      image_url: formData.image_url?.trim() || null,
+      product_stocks: formData.product_stocks.map((stock) => ({
+        brand_id: stock.brand_id,
+        store_id: stock.store_id,
+        price_1: stock.price_1 || 0,
+        price_2: stock.price_2 || 0,
+        quantity: stock.quantity || 0
       }))
     };
 
     const result = await addProduct(payload);
 
     if (result?.success) {
-      setFormData(initialFormState); // Limpia el formulario por completo tras un éxito
-      alert('¡Producto y marcas añadidos correctamente!');
+      setFormData(initialFormState);
+      alert('¡Producto e inventario inicial añadidos correctamente!');
     }
   };
 
@@ -119,102 +136,109 @@ export function AddItemPage() {
           <div className={styles.gridTwoColumns}>
             <div className={styles.fieldGroup}>
               <label className={styles.label}>Nombre del Producto *</label>
-              <input className={styles.input} name="nombre" value={formData.nombre} onChange={handleProductChange} required />
+              <input className={styles.input} name="name" value={formData.name} onChange={handleProductChange} required />
             </div>
+            
             <div className={styles.fieldGroup}>
               <label className={styles.label}>Número de Parte *</label>
-              <input className={styles.input} name="numero_parte" value={formData.numero_parte} onChange={handleProductChange} required />
+              <input className={styles.input} name="part_number" value={formData.part_number} onChange={handleProductChange} required />
             </div>
+
             <div className={styles.fieldGroup}>
-              <label className={styles.label}>Modelo *</label>
-              <div className={styles.checkboxGroup}>
-                {models.map((model) => {
-                  const isChecked = (formData.modelo || []).includes(model.id);
-                  return (
-                    <label key={model.id} className={styles.checkboxItem}>
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => handleModelChange(model.id)}
-                      />
-                      <span>{model.label}</span>
-                    </label>
-                  );
-                })}
+              <label className={styles.label}>Modelos *</label>
+              <div className={styles.checkboxGrid}>
+                {models.map((model) => (
+                  <label key={model.id} className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={formData.model_ids.some(id => String(id) === String(model.id))}
+                      onChange={() => handleModelSelect(model.id)}
+                    />
+                    <span>{model.label}</span>
+                  </label>
+                ))}
               </div>
             </div>
+
             <div className={styles.fieldGroup}>
               <label className={styles.label}>Categoría *</label>
-              <select className={styles.input} name="categoria" value={formData.categoria} onChange={handleProductChange}>
+              <select className={styles.input} name="category_id" value={formData.category_id} onChange={handleProductChange} required>
                 <option value="">Selecciona una categoría</option>
                 {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.label}
-                  </option>
+                  <option key={category.id} value={category.id}>{category.label}</option>
                 ))}
               </select>
             </div>
-            <div className={styles.fieldGroup}>
-              <label className={styles.label}>Almacén *</label>
-              <select className={styles.input} name="almacen" value={formData.almacen} onChange={handleProductChange} required>
-                <option value="">Selecciona un almacén</option>
-                {stores.map((store) => (
-                  <option key={store.id} value={store.id}>
-                    {store.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+
             <div className={styles.fieldGroup}>
               <label className={styles.label}>Descripción</label>
-              <input className={styles.input} name="descripcion" value={formData.descripcion} onChange={handleProductChange} />
+              <input className={styles.input} name="description" value={formData.description} onChange={handleProductChange} />
             </div>
+
             <div className={styles.fieldGroup}>
               <label className={styles.label}>Imagen (opcional)</label>
-              <input className={styles.input} name="imagen" value={formData.imagen} onChange={handleProductChange} placeholder="https://..." />
+              <input className={styles.input} name="image_url" value={formData.image_url} onChange={handleProductChange} placeholder="https://..." />
             </div>
           </div>
         </section>
 
         <section className={styles.section}>
-          <h3 className={styles.sectionTitle}>Marcas, Precios y Cantidades</h3>
-          <p className={styles.helperText}>Puedes asignar múltiples marcas a este mismo producto.</p>
+          <h3 className={styles.sectionTitle}>Marcas, Precios y Almacenes</h3>
+          <p className={styles.helperText}>Asigna las marcas y las existencias físicas iniciales para este artículo.</p>
 
-          {formData.product_brands.map((brand, index) => (
-            <div key={index} className={styles.brandRow}>
-              <div className={styles.brandFieldWide}>
+          {formData.product_stocks.map((stock, index) => (
+            <div key={index} className={styles.brandRow} style={{ display: 'flex', gap: '10px', marginBottom: '15px', alignItems: 'flex-end' }}>
+              <div style={{ flex: 2 }}>
                 {index === 0 && <label className={styles.label}>Marca *</label>}
-                <input className={styles.input} placeholder="Ej: Bosch" value={brand.marca} onChange={(e) => handleBrandChange(index, 'marca', e.target.value)} required />
-              </div>
-              <div className={styles.brandField}>
-                {index === 0 && <label className={styles.label}>Precio 1</label>}
-                <input className={styles.input} type="number" step="0.01" placeholder="0.00" value={brand.precio1} onChange={(e) => handleBrandChange(index, 'precio1', e.target.value)} />
-              </div>
-              <div className={styles.brandField}>
-                {index === 0 && <label className={styles.label}>Precio 2</label>}
-                <input className={styles.input} type="number" step="0.01" placeholder="0.00" value={brand.precio2} onChange={(e) => handleBrandChange(index, 'precio2', e.target.value)} />
-              </div>
-              <div className={styles.brandField}>
-                {index === 0 && <label className={styles.label}>Cantidad</label>}
-                <input className={styles.input} type="number" placeholder="0" value={brand.cantidad} onChange={(e) => handleBrandChange(index, 'cantidad', e.target.value)} />
+                <select className={styles.input} value={stock.brand_id} onChange={(e) => handleStockChange(index, 'brand_id', e.target.value)} required>
+                  <option value="">Seleccionar Marca</option>
+                  {availableBrands.map(b => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </select>
               </div>
 
-              {formData.product_brands.length > 1 && (
-                <button type="button" className={styles.removeButton} onClick={() => removeBrandRow(index)}>
+              <div style={{ flex: 2 }}>
+                {index === 0 && <label className={styles.label}>Almacén *</label>}
+                <select className={styles.input} value={stock.store_id} onChange={(e) => handleStockChange(index, 'store_id', e.target.value)} required>
+                  <option value="">Seleccionar Almacén</option>
+                  {stores.map(s => (
+                    <option key={s.id} value={s.id}>{s.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ flex: 1 }}>
+                {index === 0 && <label className={styles.label}>Precio Mayor</label>}
+                <input className={styles.input} type="number" step="0.01" placeholder="0.00" value={stock.price_1} onChange={(e) => handleStockChange(index, 'price_1', e.target.value)} />
+              </div>
+
+              <div style={{ flex: 1 }}>
+                {index === 0 && <label className={styles.label}>Precio Detal</label>}
+                <input className={styles.input} type="number" step="0.01" placeholder="0.00" value={stock.price_2} onChange={(e) => handleStockChange(index, 'price_2', e.target.value)} />
+              </div>
+
+              <div style={{ flex: 1 }}>
+                {index === 0 && <label className={styles.label}>Cant.</label>}
+                <input className={styles.input} type="number" placeholder="0" value={stock.quantity} onChange={(e) => handleStockChange(index, 'quantity', e.target.value)} required />
+              </div>
+
+              <div>
+                <button type="button" onClick={() => removeStockRow(index)} className={styles.removeButton} style={{ padding: '8px 12px', background: '#ff4d4d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
                   X
                 </button>
-              )}
+              </div>
             </div>
           ))}
 
-          <button type="button" className={styles.addButton} onClick={addBrandRow}>
-            + Añadir otra marca
+          <button type="button" onClick={addStockRow} className={styles.addButton} style={{ padding: '10px 15px', marginTop: '10px', cursor: 'pointer' }}>
+            + Añadir otra marca/almacén
           </button>
         </section>
 
         <div className={styles.actions}>
-          <button type="submit" disabled={isSubmitting} className={styles.submitButton}>
-            {isSubmitting ? 'Guardando Producto...' : 'Registrar Producto Completo'}
+          <button type="submit" disabled={isSubmitting} className={styles.submitButton} style={{ width: '100%', padding: '12px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer' }}>
+            {isSubmitting ? 'Guardando producto...' : 'Registrar Producto Completo'}
           </button>
         </div>
       </form>

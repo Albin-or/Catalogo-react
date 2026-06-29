@@ -1,29 +1,23 @@
 import styles from "./Filters.module.css";
 import { cleanText } from '../hooks/useFilters.jsx'
+import { useInventory } from '../hooks/useInventory.jsx'
 
 export function Filters({ 
   selectedCategories,
   selectedModels,
   handleCheckboxChange
 }) {
-
-  const categories = [
-    { id: "mangueras", label: "Mangueras" },
-    { id: "motor", label: "Motor" },
-    { id: "frenos", label: "Frenos" },
-    { id: "suspension", label: "Suspensión" },
-    { id: "electrico", label: "Eléctrico" },
-  ];
-
-  const models = [
-    { id: "corolla", label: "Corolla" },
-    { id: "yaris", label: "Yaris" },
-    { id: "camry", label: "Camry" },
-  ];
+  const { categories, models, error } = useInventory();
 
   return (
     <aside className={styles.filters}>
       <h2>Filtros</h2>
+
+      {error && (
+        <div className={styles.errorBanner}>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
 
       <h3>Categoría</h3>
       <ul>
