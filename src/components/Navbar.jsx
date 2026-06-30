@@ -6,6 +6,7 @@ import { Link } from './Link.jsx'
 
 export function Navbar() {
   const { searchQuery, handleInputChange } = useFiltersContext();
+
   const handleSearchSubmit = (e) => {
     e.preventDefault()
   }
@@ -16,23 +17,28 @@ export function Navbar() {
         <img src={logo} alt="Toyocars - Repuestos originales Toyota"/>
       </Link>
 
-        <form className={styles.search} onSubmit={handleSearchSubmit}>
-            <span className={styles.searchIcon} aria-hidden="true">
-                <img src={searchIcon} alt=""/>
-            </span>
-            
-            <input 
-              defaultValue={searchQuery}
-              id="search-parts"
-              type="search" 
-              placeholder="Número de pieza / Descripción / Categoría"
-              aria-label="Buscar repuestos Toyota"
-              onChange={handleInputChange}
-            />
-            
-            <button type="submit">Buscar</button>
-        </form>
-      <Link to="/addItem" className={styles.addItemButton}>Añadir Producto</Link>
+      <form className={styles.search} onSubmit={handleSearchSubmit}>
+        <span className={styles.searchIcon} aria-hidden="true">
+          <img src={searchIcon} alt=""/>
+        </span>
+
+        <input
+          defaultValue={searchQuery}
+          id="search-parts"
+          type="search"
+          placeholder="Número de pieza / Descripción / Categoría"
+          aria-label="Buscar repuestos Toyota"
+          onChange={handleInputChange}
+        />
+
+        <button type="submit">Buscar</button>
+      </form>
+
+      <div className={styles.buttonGroup}>
+        <Link to="/restock" className={styles.addItemButton}>Cargo</Link>
+        <Link to="/discharge" className={styles.addItemButton}>Descargo</Link>
+        <Link to="/addItem" className={styles.addItemButton}>Añadir Producto</Link>
+      </div>
     </nav>
   )
 }

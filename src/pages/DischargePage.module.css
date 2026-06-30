@@ -1,0 +1,241 @@
+.container {
+  padding: 32px 24px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  margin: 0 0 16px;
+  color: var(--text);
+  font-size: clamp(1.5rem, 2vw, 2rem);
+}
+
+.noPrint {
+  display: block;
+}
+
+.metaForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  color: var(--text);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(235, 10, 30, 0.18);
+}
+
+.searchSection {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.searchGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.addToCartRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.primaryButton,
+.removeButton,
+.submitButton {
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform var(--transition), opacity var(--transition), background var(--transition);
+}
+
+.primaryButton {
+  padding: 10px 14px;
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+}
+
+.removeButton {
+  padding: 8px 10px;
+  background: rgba(235, 10, 30, 0.14);
+  color: var(--accent);
+}
+
+.submitButton {
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px 20px;
+  background: #007bff;
+  color: white;
+  font-weight: 700;
+}
+
+.printBlock {
+  margin-top: 28px;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+
+.invoiceHeader {
+  margin-bottom: 18px;
+}
+
+.invoiceHeader h2 {
+  margin: 0 0 8px;
+  color: var(--text);
+}
+
+.cartTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.cartTable th,
+.cartTable td {
+  border-bottom: 1px solid var(--border);
+  padding: 10px 8px;
+  text-align: left;
+}
+
+.center {
+  text-align: center;
+}
+
+.actionsCell {
+  text-align: right;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 30px 0;
+}
+
+.summaryRow {
+  margin-top: 16px;
+  font-size: 1rem;
+}
+
+.signatureSection {
+  display: none;
+}
+
+.errorAlert {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(235, 10, 30, 0.16);
+  color: #ffb3b8;
+  border: 1px solid rgba(235, 10, 30, 0.25);
+}
+
+@media (max-width: 768px) {
+  .metaForm,
+  .searchGrid,
+  .addToCartRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .noPrint {
+    display: none !important;
+  }
+
+  body,
+  html {
+    margin: 0;
+    padding: 0;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .printBlock {
+    margin-top: 0 !important;
+    border-top: none !important;
+    padding-top: 0 !important;
+  }
+
+  .invoiceHeader {
+    margin-top: 0 !important;
+  }
+
+  .cartTable th,
+  .cartTable td {
+    border-color: #000 !important;
+    color: #000 !important;
+  }
+
+  .cartTable th {
+    border-bottom: 1px solid #222 !important;
+  }
+
+  .cartTable td {
+    border-bottom: 1px dashed #999 !important;
+  }
+
+  .signatureSection {
+    display: flex !important;
+    justify-content: space-between;
+    margin-top: 90px !important;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+
+  .signatureLine {
+    width: 220px;
+    border-top: 1px solid #000;
+    margin: 0 auto 8px;
+  }
+
+  .primaryButton,
+  .removeButton,
+  .submitButton,
+  .searchSection,
+  .metaForm,
+  .addToCartRow,
+  .errorAlert {
+    display: none !important;
+  }
+}

@@ -23,6 +23,40 @@
     animation-range: 0px 80px;
 }
 
+.buttonGroup {
+    display: flex;
+    gap: 8px;
+    overflow: hidden;
+    transition: transform 0.25s ease, opacity 0.25s ease, max-height 0.25s ease;
+}
+
+@keyframes hideButtonGroup {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 120px;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    75% {
+        opacity: 0;
+        transform: translateY(-25%);
+        max-height: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-25%);
+        max-height: 0;
+        visibility: hidden;
+        pointer-events: none;
+        display: none;
+    }
+}
+
 @keyframes shrinkNavbar {
     to {
         padding: 10px 22px;
@@ -30,6 +64,14 @@
         backdrop-filter: blur(10px);
         background: rgba(18, 18, 18, 0.82);
         box-shadow: 0 10px 34px rgba(0,0,0,0.35);
+    }
+}
+
+@media (max-width: 768px) {
+    .buttonGroup {
+        animation: hideButtonGroup linear both;
+        animation-timeline: scroll(root);
+        animation-range: 80px 160px;
     }
 }
 
@@ -166,3 +208,13 @@
         padding: 10px 16px;
     }
 }
+
+@media print {
+    .navigation,
+    .search,
+    .buttonGroup,
+    .addItemButton {
+        display: none !important;
+    }
+}
+

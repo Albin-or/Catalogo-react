@@ -28,7 +28,7 @@ export function Filters({
                 type="checkbox" 
                 name="category" 
                 value={cat.id} 
-                checked={selectedCategories.includes(cleanText(cat.id))}
+                checked={selectedCategories.includes(cleanText(String(cat.id)))}
                 onChange={() => handleCheckboxChange(cat.id, selectedCategories, 'categories')}
               />
               <span className={styles.labelText}>{cat.label}</span>
@@ -46,7 +46,7 @@ export function Filters({
                 type="checkbox" 
                 name="model" 
                 value={model.id} 
-                checked={selectedModels.includes(cleanText(model.id))}
+                checked={selectedModels.includes(cleanText(String(model.id)))}
                 onChange={() => handleCheckboxChange(model.id, selectedModels, 'models')}
               />
               <span className={styles.labelText}>{model.label}</span>

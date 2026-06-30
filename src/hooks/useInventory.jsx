@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';  
+import { useState, useEffect, useCallback, createContext, useContext } from 'react';  
 import { supabase } from '../supabaseClient';
 
-export function useInventory() {  
+const InventoryContext = createContext(null);
+
+function useInventoryState() {  
   const [products, setProducts] = useState([]);  
   const [models, setModels] = useState([]);  
   const [categories, setCategories] = useState([]);  
@@ -264,6 +266,90 @@ export function useInventory() {
     }  
   };
 
+  const restockProduct = async (stocksArray) => {
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      if (!Array.isArray(stocksArray) || stocksArray.length === 0) {
+        return { success: false, error: 'No hay existencias para cargar' };
+      }
+
+      const promises = stocksArray.map((stock) =>
+        supabase.rpc('upsert_product_stock_v2', {
+          p_product_id: Number(stock.product_id),
+          p_brand_id: Number(stock.brand_id),
+          p_store_id: stock.store_id,
+          p_price_1: Number(stock.price_1) || 0,
+          p_price_2: Number(stock.price_2) || 0,
+          p_quantity_to_add: Number(stock.quantity) || 0,
+        })
+      );
+
+      await Promise.all(promises);
+      await fetchProducts();
+      return { success: true };
+    } catch (err) {
+      console.error('Error al cargar inventario:', err);
+      setError(err.message || 'Error en el proceso de cargo');
+      return { success: false, error: err };
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const checkoutInventory = async (cartItems) => {
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      if (!Array.isArray(cartItems) || cartItems.length === 0) {
+        return { success: false, error: 'No hay artículos para descartar' };
+      }
+
+      const promises = cartItems.map((item) =>
+        supabase.rpc('decrease_product_stock_v2', {
+          p_stock_id: Number(item.stock_id),
+          p_quantity_to_sub: Number(item.quantity),
+        })
+      );
+
+      await Promise.all(promises);
+      await fetchProducts();
+      return { success: true };
+    } catch (err) {
+      console.error('Error en el descargo de inventario:', err);
+      setError(err.message || 'Error al procesar el descargo');
+      return { success: false, error: err };
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const addBrand = async (brandName) => {
+    try {
+      const trimmedName = brandName?.trim();
+      if (!trimmedName) return { success: false, error: 'El nombre no puede estar vacío' };
+
+      // Insertamos la nueva marca en la base de datos
+      const { data, error: supabaseError } = await supabase
+        .from('brands')
+        .insert([{ name: trimmedName }])
+        .select()
+        .single();
+
+      if (supabaseError) throw supabaseError;
+
+      // Retornamos la marca creada para que el componente frontend la use de inmediato
+      return { success: true, data };
+    } catch (err) {
+      console.error('Error al crear marca:', err);
+      return { success: false, error: err.message };
+    }
+  };
+
+
+
   return {  
     products,  
     models,  
@@ -276,6 +362,24 @@ export function useInventory() {
     addProduct,  
     updateProduct,  
     deleteProduct,  
-    addStockToProduct  
+    addStockToProduct,
+    restockProduct,
+    checkoutInventory,
+    addBrand
   };  
+}
+
+export function InventoryProvider({ children }) {
+  const value = useInventoryState();
+
+  return (
+    <InventoryContext.Provider value={value}>
+      {children}
+    </InventoryContext.Provider>
+  );
+}
+
+export function useInventory() {
+  const context = useContext(InventoryContext);
+  return context ?? useInventoryState();
 }

@@ -11,9 +11,10 @@ export const cleanText = (text = '') => {
 export function useFilters(allProducts) {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const normalizeValue = (value) => cleanText(String(value ?? ''));
   const searchQuery = searchParams.get('search') || '';
-  const selectedCategories = searchParams.get('categories') ? searchParams.get('categories').split(',') : [];
-  const selectedModels = searchParams.get('models') ? searchParams.get('models').split(',') : [];
+  const selectedCategories = searchParams.get('categories') ? searchParams.get('categories').split(',').map(normalizeValue) : [];
+  const selectedModels = searchParams.get('models') ? searchParams.get('models').split(',').map(normalizeValue) : [];
   const currentPage = searchParams.get('page') ? parseInt(searchParams.get('page'), 10) : 1;
 
   const timeoutId = useRef(null);
@@ -56,15 +57,22 @@ export function useFilters(allProducts) {
 
   const filteredProducts = useMemo(() => 
       allProducts.filter(product => {
-      const matchesSearch = searchQuery === '' || 
-      cleanText(product.nombre).includes(cleanText(searchQuery)) ||
-      cleanText(product.numero_parte || '').includes(cleanText(searchQuery)) ||
-      cleanText(product.descripcion || '').includes(cleanText(searchQuery));
+      const normalizedSearch = cleanText(searchQuery);
+      const matchesSearch = normalizedSearch === '' || [
+        product.name,
+        product.part_number,
+        product.description
+      ].some(value => cleanText(value || '').includes(normalizedSearch));
 
-      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(cleanText(product.categoria));
-      
-      const matchesModel = selectedModels.length === 0 || selectedModels.includes(cleanText(product.modelo));
-      
+      const productCategoryId = normalizeValue(product.category_id);
+      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(productCategoryId);
+
+      const modelIds = [
+        product.model_id,
+        ...(Array.isArray(product.model_ids) ? product.model_ids : [])
+      ].map(normalizeValue).filter(Boolean);
+      const matchesModel = selectedModels.length === 0 || modelIds.some(modelId => selectedModels.includes(modelId));
+
       return matchesSearch && matchesCategory && matchesModel;
     }),
     [searchQuery, selectedCategories, selectedModels, allProducts]);

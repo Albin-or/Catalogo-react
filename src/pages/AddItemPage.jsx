@@ -4,7 +4,7 @@ import { supabase } from '../supabaseClient';
 import styles from './AddItemPage.module.css';
 
 export function AddItemPage() {
-  const { isSubmitting, error, stores, categories, models, addProduct } = useInventory();
+  const { isSubmitting, error, stores, categories, models, addProduct, addBrand } = useInventory();
   const [availableBrands, setAvailableBrands] = useState([]);
 
   const initialFormState = {
@@ -15,7 +15,7 @@ export function AddItemPage() {
     category_id: '',
     description: '',
     image_url: '',
-    product_stocks: [{ brand_id: '', price_1: '', price_2: '', quantity: '', store_id: '' }]
+    product_stocks: [{ brand_id: '', _brand_name_input: '', _is_new: false, price_1: '', price_2: '', quantity: '', store_id: '' }]
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -44,6 +44,53 @@ export function AddItemPage() {
     });
   };
 
+  const handleBrandSelection = (index, value) => {
+    const normalizedValue = value?.trim() || '';
+    const existingBrand = availableBrands.find(
+      (brand) => brand.name.toLowerCase() === normalizedValue.toLowerCase()
+    );
+
+    if (existingBrand) {
+      handleStockChange(index, 'brand_id', existingBrand.id);
+      handleStockChange(index, '_brand_name_input', existingBrand.name);
+      handleStockChange(index, '_is_new', false);
+    } else {
+      handleStockChange(index, 'brand_id', '');
+      handleStockChange(index, '_brand_name_input', normalizedValue);
+      handleStockChange(index, '_is_new', normalizedValue.length > 0);
+    }
+  };
+
+  const handleCreateBrandInline = async (index) => {
+    const stockRow = formData.product_stocks[index];
+    const newBrandName = stockRow._brand_name_input?.trim();
+
+    if (!newBrandName) return;
+
+    const existingBrand = availableBrands.find(
+      (brand) => brand.name.toLowerCase() === newBrandName.toLowerCase()
+    );
+
+    if (existingBrand) {
+      handleStockChange(index, 'brand_id', existingBrand.id);
+      handleStockChange(index, '_brand_name_input', existingBrand.name);
+      handleStockChange(index, '_is_new', false);
+      return;
+    }
+
+    const result = await addBrand(newBrandName);
+
+    if (result?.success) {
+      setAvailableBrands((prev) => [...prev, result.data].sort((a, b) => a.name.localeCompare(b.name)));
+      handleStockChange(index, 'brand_id', result.data.id);
+      handleStockChange(index, '_brand_name_input', result.data.name);
+      handleStockChange(index, '_is_new', false);
+      alert(`Marca "${result.data.name}" creada y seleccionada correctamente.`);
+    } else {
+      alert('Error al crear la marca en el sistema.');
+    }
+  };
+
   const handleModelSelect = (modelId) => {
     setFormData(prev => {
       const isSelected = prev.model_ids.some(id => String(id) === String(modelId));
@@ -63,7 +110,7 @@ export function AddItemPage() {
   const addStockRow = () => {
     setFormData(prev => ({
       ...prev,
-      product_stocks: [...prev.product_stocks, { brand_id: '', price_1: '', price_2: '', quantity: '', store_id: '' }]
+      product_stocks: [...prev.product_stocks, { brand_id: '', _brand_name_input: '', _is_new: false, price_1: '', price_2: '', quantity: '', store_id: '' }]
     }));
   };
 
@@ -188,14 +235,37 @@ export function AddItemPage() {
 
           {formData.product_stocks.map((stock, index) => (
             <div key={index} className={styles.brandRow} style={{ display: 'flex', gap: '10px', marginBottom: '15px', alignItems: 'flex-end' }}>
-              <div style={{ flex: 2 }}>
+              <div style={{ flex: 2, position: 'relative' }}>
                 {index === 0 && <label className={styles.label}>Marca *</label>}
-                <select className={styles.input} value={stock.brand_id} onChange={(e) => handleStockChange(index, 'brand_id', e.target.value)} required>
-                  <option value="">Seleccionar Marca</option>
-                  {availableBrands.map(b => (
-                    <option key={b.id} value={b.id}>{b.name}</option>
-                  ))}
-                </select>
+                <div style={{ display: 'flex', gap: '5px' }}>
+                  <input
+                    className={styles.input}
+                    type="text"
+                    placeholder="Welcome to my party"
+                    list="brands-dataset"
+                    value={stock._brand_name_input ?? ''}
+                    onChange={(e) => handleBrandSelection(index, e.target.value)}
+                    autoComplete="off"
+                    required
+                  />
+
+                  <datalist id="brands-dataset">
+                    {availableBrands.map((brand) => (
+                      <option key={brand.id} value={brand.name} />
+                    ))}
+                  </datalist>
+
+                  {stock._is_new && (
+                    <button
+                      type="button"
+                      onClick={() => handleCreateBrandInline(index)}
+                      style={{ padding: '0 10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                      title="Crear como nueva marca en el sistema"
+                    >
+                      +
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div style={{ flex: 2 }}>
@@ -209,18 +279,18 @@ export function AddItemPage() {
               </div>
 
               <div style={{ flex: 1 }}>
-                {index === 0 && <label className={styles.label}>Precio Mayor</label>}
-                <input className={styles.input} type="number" step="0.01" placeholder="0.00" value={stock.price_1} onChange={(e) => handleStockChange(index, 'price_1', e.target.value)} />
+                {index === 0 && <label className={styles.label}>Precio 1</label>}
+                <input className={styles.input} type="number" step="1" placeholder="0.00" value={stock.price_1} onChange={(e) => handleStockChange(index, 'price_1', e.target.value)} />
               </div>
 
               <div style={{ flex: 1 }}>
-                {index === 0 && <label className={styles.label}>Precio Detal</label>}
-                <input className={styles.input} type="number" step="0.01" placeholder="0.00" value={stock.price_2} onChange={(e) => handleStockChange(index, 'price_2', e.target.value)} />
+                {index === 0 && <label className={styles.label}>Precio 2</label>}
+                <input className={styles.input} type="number" step="1" placeholder="0.00" value={stock.price_2} onChange={(e) => handleStockChange(index, 'price_2', e.target.value)} />
               </div>
 
               <div style={{ flex: 1 }}>
                 {index === 0 && <label className={styles.label}>Cant.</label>}
-                <input className={styles.input} type="number" placeholder="0" value={stock.quantity} onChange={(e) => handleStockChange(index, 'quantity', e.target.value)} required />
+                <input className={styles.input} type="number" step="1" placeholder="0" value={stock.quantity} onChange={(e) => handleStockChange(index, 'quantity', e.target.value)} required />
               </div>
 
               <div>
