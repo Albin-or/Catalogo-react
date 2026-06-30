@@ -239,7 +239,7 @@ export function DischargePage() {
         <div className={styles.invoiceHeader}>
           <h2>NOTA DE DESPACHO E INVENTARIO</h2>
           <p><strong>Fecha/Hora:</strong> {new Date().toLocaleString()}</p>
-          <p><strong>Responsable del Despacho:</strong> {responsibleName || '_________________________'}</p>
+          <p><strong>Responsable:</strong> {responsibleName || '_________________________'}</p>
           {dischargeReason && <p><strong>Motivo/Destino:</strong> {dischargeReason}</p>}
         </div>
 
@@ -282,17 +282,6 @@ export function DischargePage() {
 
         <div className={styles.summaryRow}>
           <p><strong>Total de unidades:</strong> {cartTotal}</p>
-        </div>
-
-        <div className={styles.signatureSection}>
-          <div>
-            <div className={styles.signatureLine} />
-            <p>Firma de Responsable</p>
-          </div>
-          <div>
-            <div className={styles.signatureLine} />
-            <p>Firma de Control de Almacén</p>
-          </div>
         </div>
 
         <button

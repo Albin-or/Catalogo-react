@@ -3,6 +3,9 @@ import searchIcon from '../assets/search-icon.svg'
 import styles from './Navbar.module.css'
 import { useFiltersContext } from './FiltersContext.jsx'
 import { Link } from './Link.jsx'
+import addItemIcon from '../assets/addItem.svg'
+import restockIcon from '../assets/charge.svg'
+import dischargeIcon from '../assets/discharge.svg'
 
 export function Navbar() {
   const { searchQuery, handleInputChange } = useFiltersContext();
@@ -35,9 +38,18 @@ export function Navbar() {
       </form>
 
       <div className={styles.buttonGroup}>
-        <Link to="/restock" className={styles.addItemButton}>Cargo</Link>
-        <Link to="/discharge" className={styles.addItemButton}>Descargo</Link>
-        <Link to="/addItem" className={styles.addItemButton}>Añadir Producto</Link>
+        <Link to="/restock" className={styles.addItemButton}>
+          <img src={restockIcon} alt="Cargo" />
+          Cargo
+        </Link>
+        <Link to="/discharge" className={styles.addItemButton}>
+          <img src={dischargeIcon} alt="Descargo" />
+          Descargo
+        </Link>
+        <Link to="/addItem" className={styles.addItemButton}>
+          <img src={addItemIcon} alt="Añadir Producto" />
+          Añadir Producto
+        </Link>
       </div>
     </nav>
   )
