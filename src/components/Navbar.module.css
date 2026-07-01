@@ -132,6 +132,9 @@
 
 .search button {
     background: #EB0A1E;
+    max-height: 40px;
+    max-width: 100px;
+    font-size: 0.6rem;
     color: #fff;
     border: none;
     padding: 10px 20px;

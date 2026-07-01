@@ -234,10 +234,10 @@ export function AddItemPage() {
           <p className={styles.helperText}>Asigna las marcas y las existencias físicas iniciales para este artículo.</p>
 
           {formData.product_stocks.map((stock, index) => (
-            <div key={index} className={styles.brandRow} style={{ display: 'flex', gap: '10px', marginBottom: '15px', alignItems: 'flex-end' }}>
-              <div style={{ flex: 2, position: 'relative' }}>
+            <div key={index} className={styles.brandRow}>
+              <div className={styles.brandFieldWide}>
                 {index === 0 && <label className={styles.label}>Marca *</label>}
-                <div style={{ display: 'flex', gap: '5px' }}>
+                <div className={styles.brandInputRow}>
                   <input
                     className={styles.input}
                     type="text"
@@ -259,7 +259,7 @@ export function AddItemPage() {
                     <button
                       type="button"
                       onClick={() => handleCreateBrandInline(index)}
-                      style={{ padding: '0 10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                      className={styles.createBrandButton}
                       title="Crear como nueva marca en el sistema"
                     >
                       +
@@ -268,7 +268,7 @@ export function AddItemPage() {
                 </div>
               </div>
 
-              <div style={{ flex: 2 }}>
+              <div className={styles.storeField}>
                 {index === 0 && <label className={styles.label}>Almacén *</label>}
                 <select className={styles.input} value={stock.store_id} onChange={(e) => handleStockChange(index, 'store_id', e.target.value)} required>
                   <option value="">Seleccionar Almacén</option>
@@ -278,36 +278,36 @@ export function AddItemPage() {
                 </select>
               </div>
 
-              <div style={{ flex: 1 }}>
+              <div className={styles.stockField}>
                 {index === 0 && <label className={styles.label}>Precio 1</label>}
                 <input className={styles.input} type="number" step="1" placeholder="0.00" value={stock.price_1} onChange={(e) => handleStockChange(index, 'price_1', e.target.value)} />
               </div>
 
-              <div style={{ flex: 1 }}>
+              <div className={styles.stockField}>
                 {index === 0 && <label className={styles.label}>Precio 2</label>}
                 <input className={styles.input} type="number" step="1" placeholder="0.00" value={stock.price_2} onChange={(e) => handleStockChange(index, 'price_2', e.target.value)} />
               </div>
 
-              <div style={{ flex: 1 }}>
+              <div className={styles.stockField}>
                 {index === 0 && <label className={styles.label}>Cant.</label>}
                 <input className={styles.input} type="number" step="1" placeholder="0" value={stock.quantity} onChange={(e) => handleStockChange(index, 'quantity', e.target.value)} required />
               </div>
 
               <div>
-                <button type="button" onClick={() => removeStockRow(index)} className={styles.removeButton} style={{ padding: '8px 12px', background: '#ff4d4d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                <button style={formData.product_stocks.length === 1 ? {display: 'none'} : {}} type="button" onClick={() => removeStockRow(index)} className={styles.removeButton}>
                   X
                 </button>
               </div>
             </div>
           ))}
 
-          <button type="button" onClick={addStockRow} className={styles.addButton} style={{ padding: '10px 15px', marginTop: '10px', cursor: 'pointer' }}>
+          <button type="button" onClick={addStockRow} className={styles.addButton}>
             + Añadir otra marca/almacén
           </button>
         </section>
 
         <div className={styles.actions}>
-          <button type="submit" disabled={isSubmitting} className={styles.submitButton} style={{ width: '100%', padding: '12px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer' }}>
+          <button type="submit" disabled={isSubmitting} className={styles.submitButton}>
             {isSubmitting ? 'Guardando producto...' : 'Registrar Producto Completo'}
           </button>
         </div>

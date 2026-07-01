@@ -123,17 +123,30 @@
 
 .brandRow {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr auto;
+  grid-template-columns: 2fr 2fr 1fr 1fr 1fr auto;
   gap: 10px;
-  align-items: end;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
+  align-items: flex-end;
 }
 
 .brandField,
-.brandFieldWide {
+.brandFieldWide,
+.storeField,
+.stockField {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  height: 100%;
+}
+
+.createBrandButton {
+  padding: 0 10px;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .removeButton,
@@ -146,20 +159,23 @@
 }
 
 .removeButton {
-  padding: 10px 12px;
-  background: rgba(235, 10, 30, 0.14);
-  color: var(--accent);
+  padding: 8px 12px;
+  background: #ff4d4d;
+  color: #fff;
+  border-radius: 4px;
 }
 
 .addButton {
-  padding: 10px 14px;
-  margin-top: 6px;
+  padding: 10px 15px;
+  margin-top: 10px;
   background: rgba(235, 10, 30, 0.12);
   color: var(--text);
 }
 
 .submitButton {
-  padding: 12px 20px;
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
   background: var(--accent);
   color: white;
   font-weight: 700;
@@ -202,7 +218,7 @@
   }
 
   .brandRow {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .actions {
