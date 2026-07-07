@@ -99,13 +99,29 @@ function useInventoryState() {
     setError(null);  
     try {  
       const { product_stocks, ...newProduct } = productData;
+      const trimmedPartNumber = newProduct.part_number?.trim() || '';
 
       const selectedModelIds = Array.isArray(productData.model_ids)
         ? Array.from(new Set(productData.model_ids.map(id => String(id)).filter(Boolean)))
         : [];
 
+      if (trimmedPartNumber) {
+        const { data: existingProducts, error: partNumberCheckError } = await supabase
+          .from('products')
+          .select('id')
+          .eq('part_number', trimmedPartNumber);
+
+        if (partNumberCheckError) throw partNumberCheckError;
+
+        if (Array.isArray(existingProducts) && existingProducts.length > 0) {
+          const duplicateError = new Error('El número de parte ya existe. No se puede agregar un producto duplicado.');
+          setError(duplicateError.message);
+          return { success: false, error: duplicateError };
+        }
+      }
+
       const normalizedProduct = {  
-        part_number: newProduct.part_number,  
+        part_number: trimmedPartNumber,  
         name: newProduct.name,  
         description: newProduct.description,  
         model_id: selectedModelIds[0] || newProduct.model_id || null,  

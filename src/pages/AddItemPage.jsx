@@ -142,6 +142,22 @@ export function AddItemPage() {
       return;
     }
 
+    const { data: existingProducts, error: duplicateCheckError } = await supabase
+      .from('products')
+      .select('id')
+      .eq('part_number', trimmedPartNumber);
+
+    if (duplicateCheckError) {
+      console.error(duplicateCheckError);
+      alert('No se pudo verificar el número de parte. Intenta nuevamente.');
+      return;
+    }
+
+    if (Array.isArray(existingProducts) && existingProducts.length > 0) {
+      alert('El número de parte ya existe. No se puede agregar un producto duplicado.');
+      return;
+    }
+
     const payload = {
       name: trimmedName,
       part_number: trimmedPartNumber,
