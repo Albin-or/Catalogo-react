@@ -7,7 +7,9 @@ export function RestockPage() {
   const { products, stores, addBrand, restockProduct, isSubmitting, error } = useInventory();
 
   const [partNumberSearch, setPartNumberSearch] = useState('');
+  const [nameSearch, setNameSearch] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [lastChangedField, setLastChangedField] = useState(null);
   const [availableBrands, setAvailableBrands] = useState([]);
   const [incomingStocks, setIncomingStocks] = useState([
     { brand_id: '', _brand_name_input: '', _is_new: false, store_id: '', price_1: '', price_2: '', quantity: '' }
@@ -22,17 +24,57 @@ export function RestockPage() {
     loadBrands();
   }, []);
 
-  useEffect(() => {
-    const trimmed = partNumberSearch.trim();
+  const findProductBySearch = (partValue, nameValue, priority) => {
+    const trimmedPart = partValue?.trim() || '';
+    const trimmedName = nameValue?.trim() || '';
 
-    if (!trimmed) {
+    const findByPart = () => {
+      if (!trimmedPart) return null;
+      return products.find((product) => product.part_number?.toLowerCase() === trimmedPart.toLowerCase()) || null;
+    };
+
+    const findByName = () => {
+      if (!trimmedName) return null;
+      const normalizedName = trimmedName.toLowerCase();
+      return products.find((product) => product.name?.toLowerCase().includes(normalizedName)) || null;
+    };
+
+    if (priority === 'name') {
+      return trimmedName ? findByName() : findByPart();
+    }
+
+    return trimmedPart ? findByPart() : findByName();
+  };
+
+  const shouldAutoFillOtherField = (otherValue, previousValue) => {
+    const trimmedOther = otherValue?.trim() || '';
+    const trimmedPrevious = previousValue?.trim() || '';
+    return trimmedOther === '' || trimmedOther.toLowerCase() === trimmedPrevious.toLowerCase();
+  };
+
+  useEffect(() => {
+    const trimmedPart = partNumberSearch.trim();
+    const trimmedName = nameSearch.trim();
+
+    if (!trimmedPart && !trimmedName) {
       setSelectedProduct(null);
       return;
     }
 
-    const match = products.find((product) => product.part_number?.toLowerCase() === trimmed.toLowerCase());
+    const priority = lastChangedField === 'name' ? 'name' : 'part';
+    const match = findProductBySearch(partNumberSearch, nameSearch, priority);
     setSelectedProduct(match || null);
-  }, [partNumberSearch, products]);
+
+    if (match) {
+      if (priority === 'part' && shouldAutoFillOtherField(nameSearch, selectedProduct?.name || match.name || '')) {
+        setNameSearch(match.name || '');
+      }
+
+      if (priority === 'name' && shouldAutoFillOtherField(partNumberSearch, selectedProduct?.part_number || match.part_number || '')) {
+        setPartNumberSearch(match.part_number || '');
+      }
+    }
+  }, [partNumberSearch, nameSearch, products, lastChangedField, selectedProduct]);
 
   const handleStockRowChange = (index, field, value) => {
     setIncomingStocks((prev) => {
@@ -41,6 +83,8 @@ export function RestockPage() {
       return updated;
     });
   };
+
+  const getStoreLabel = (storeId) => stores.find((store) => String(store.id) === String(storeId))?.label || 'Desconocido';
 
   const handleBrandSelection = (index, value) => {
     const normalizedValue = value?.trim() || '';
@@ -105,7 +149,7 @@ export function RestockPage() {
     e.preventDefault();
 
     if (!selectedProduct) {
-      alert('Debes ingresar un número de parte válido y existente.');
+      alert('Debes ingresar un código o nombre de producto válido y existente.');
       return;
     }
 
@@ -129,6 +173,8 @@ export function RestockPage() {
     if (res?.success) {
       alert('¡Inventario cargado y precios actualizados con éxito!');
       setPartNumberSearch('');
+      setNameSearch('');
+      setSelectedProduct(null);
       setIncomingStocks([
         { brand_id: '', _brand_name_input: '', _is_new: false, store_id: '', price_1: '', price_2: '', quantity: '' }
       ]);
@@ -150,33 +196,86 @@ export function RestockPage() {
       <form onSubmit={handleSubmit} className={styles.form}>
         <section className={styles.section}>
           <h3 className={styles.sectionTitle}>Buscar Producto</h3>
-          <div className={styles.fieldGroup}>
-            <label className={styles.label}>Número de Parte / Código de Barra</label>
-            <input
-              className={styles.input}
-              type="text"
-              placeholder="Escribe o escanea el número de parte..."
-              list="part-number-dataset"
-              value={partNumberSearch}
-              onChange={(e) => setPartNumberSearch(e.target.value)}
-              autoComplete="off"
-              required
-            />
-            <datalist id="part-number-dataset">
-              {products.map((product) => (
-                <option key={product.id} value={product.part_number} />
-              ))}
-            </datalist>
+          <div className={styles.searchRow}>
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>Número de Parte / Código de Barra</label>
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Escribe o escanea el número de parte..."
+                list="part-number-dataset"
+                value={partNumberSearch}
+                onChange={(e) => {
+                  setPartNumberSearch(e.target.value);
+                  setLastChangedField('part');
+                }}
+                autoComplete="off"
+              />
+              <datalist id="part-number-dataset">
+                {products.map((product) => (
+                  <option key={product.id} value={product.part_number} />
+                ))}
+              </datalist>
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>Nombre del Producto</label>
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Busca por nombre del producto..."
+                list="product-name-dataset"
+                value={nameSearch}
+                onChange={(e) => {
+                  setNameSearch(e.target.value);
+                  setLastChangedField('name');
+                }}
+                autoComplete="off"
+              />
+              <datalist id="product-name-dataset">
+                {products.map((product) => (
+                  <option key={product.id} value={product.name} />
+                ))}
+              </datalist>
+            </div>
           </div>
 
           {selectedProduct ? (
-            <div className={styles.productFeedbackSuccess}>
-              <p><strong>✓ Producto Encontrado:</strong> {selectedProduct.name}</p>
-              <p className={styles.productFeedbackDescription}>{selectedProduct.description || 'Sin descripción'}</p>
-            </div>
-          ) : partNumberSearch.trim() !== '' ? (
+            <>
+              <div className={styles.productFeedbackSuccess}>
+                <p><strong>✓ Producto Encontrado:</strong> {selectedProduct.name}</p>
+                <p className={styles.productFeedbackDescription}>{selectedProduct.description || 'Sin descripción'}</p>
+              </div>
+
+              <section className={styles.inventorySection}>
+                <h4 className={styles.inventoryTitle}>Inventario Actual</h4>
+                {Array.isArray(selectedProduct.product_stocks) && selectedProduct.product_stocks.length > 0 ? (
+                  <div className={styles.inventoryTable}>
+                    <div className={styles.inventoryRowHeader}>
+                      <span>Marca</span>
+                      <span>Precio 1</span>
+                      <span>Precio 2</span>
+                      <span>Cantidad</span>
+                      <span>Almacén</span>
+                    </div>
+                    {selectedProduct.product_stocks.map((stock) => (
+                      <div key={stock.id} className={styles.inventoryRow}>
+                        <span>{stock.brands?.name || '—'}</span>
+                        <span>{stock.price_1?.toFixed?.(2) ?? Number(stock.price_1 || 0).toFixed(2)}</span>
+                        <span>{stock.price_2?.toFixed?.(2) ?? Number(stock.price_2 || 0).toFixed(2)}</span>
+                        <span>{Number(stock.quantity || 0)}</span>
+                        <span>{getStoreLabel(stock.store_id)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.helperText}>No hay inventario registrado para este producto.</p>
+                )}
+              </section>
+            </>
+          ) : partNumberSearch.trim() !== '' || nameSearch.trim() !== '' ? (
             <div className={styles.productFeedbackError}>
-              <p>⚠️ No existe ningún producto registrado con ese número de parte.</p>
+              <p>⚠️ No existe ningún producto registrado con ese código o nombre.</p>
             </div>
           ) : null}
         </section>

@@ -28,6 +28,14 @@
   font-size: 1.05rem;
 }
 
+.searchRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+
 .fieldGroup {
   display: flex;
   flex-direction: column;
@@ -102,6 +110,49 @@
   background: rgba(40, 167, 69, 0.15);
   border: 1px solid rgba(40, 167, 69, 0.3);
   color: #dff6e8;
+}
+
+.inventorySection {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+}
+
+.inventoryTitle {
+  margin: 0 0 12px;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.inventoryTable {
+  display: grid;
+  gap: 8px;
+}
+
+.inventoryRowHeader,
+.inventoryRow {
+  display: grid;
+  grid-template-columns: 1fr 0.9fr 0.9fr 0.8fr 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.inventoryRowHeader {
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.inventoryRow {
+  color: var(--text);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.inventoryRow:last-child {
+  border-bottom: none;
 }
 
 .productFeedbackError {
