@@ -3,6 +3,7 @@ import searchIcon from '../assets/search-icon.svg'
 import styles from './Navbar.module.css'
 import { useFiltersContext } from './FiltersContext.jsx'
 import { Link } from './Link.jsx'
+import { NavLink } from 'react-router'
 import addItemIcon from '../assets/addItem.svg'
 import restockIcon from '../assets/charge.svg'
 import dischargeIcon from '../assets/discharge.svg'
@@ -16,9 +17,9 @@ export function Navbar() {
 
   return (
     <nav className={styles.navigation}>
-      <Link to="/" className={styles.logo}>
+      <NavLink to="/" className={styles.logo}>
         <img src={logo} alt="Toyocars - Repuestos originales Toyota"/>
-      </Link>
+      </NavLink>
 
       <form className={styles.search} onSubmit={handleSearchSubmit}>
         <span className={styles.searchIcon} aria-hidden="true">
@@ -38,18 +39,18 @@ export function Navbar() {
       </form>
 
       <div className={styles.buttonGroup}>
-        <Link to="/restock" className={styles.addItemButton}>
+        <NavLink to="/restock" className={({ isActive }) => isActive ? `${styles.actionButton} ${styles.activeActionButton}` : styles.actionButton}>
           <img src={restockIcon} alt="Cargo" />
           Cargo
-        </Link>
-        <Link to="/discharge" className={styles.addItemButton}>
+        </NavLink>
+        <NavLink to="/discharge" className={({ isActive }) => isActive ? `${styles.actionButton} ${styles.activeActionButton}` : styles.actionButton}>
           <img src={dischargeIcon} alt="Descargo" />
           Descargo
-        </Link>
-        <Link to="/addItem" className={styles.addItemButton}>
+        </NavLink>
+        <NavLink to="/addItem" className={({ isActive }) => isActive ? `${styles.actionButton} ${styles.activeActionButton}` : styles.actionButton}>
           <img src={addItemIcon} alt="Añadir Producto" />
           Añadir Producto
-        </Link>
+        </NavLink>
       </div>
     </nav>
   )

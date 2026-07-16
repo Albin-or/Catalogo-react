@@ -3,7 +3,7 @@ import styles from "./ProductList.module.css"
 import { ProductCard } from "./ProductCard.jsx"
 import { Pagination } from "./Pagination.jsx"
 
-export function ProductList({ products, currentPage, setCurrentPage }) {
+export function ProductList({ products, currentPage }) {
     const productsPerPage = 10;
 
     const totalPages = Math.ceil(products.length / productsPerPage);
@@ -19,7 +19,7 @@ export function ProductList({ products, currentPage, setCurrentPage }) {
         <section className={styles.productsGrid}>
             <h2>Resultados</h2>
             {productCards.length > 0 ? productCards : <p>No se encontraron productos que coincidan con los filtros seleccionados.</p>}
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            <Pagination totalPages={totalPages} />
         </section>
     )
 }

@@ -6,30 +6,21 @@ import { ProductList } from '../components/ProductList.jsx'
 
 export function HomePage() {
   const {
-    searchQuery,
-    setSearchQuery,
     selectedCategories,
-    setSelectedCategories,
     selectedModels,
-    setSelectedModels,
-    currentPage,
-    setCurrentPage,
     filteredProducts,
-    handleCheckboxChange
+    handleCheckboxChange,
+    currentPage,
   } = useFiltersContext();
 
   return (
-    <>
     <main className={styles.content}>
       <Filters
         selectedCategories={selectedCategories}
-        setSelectedCategories={setSelectedCategories}
         selectedModels={selectedModels}
-        setSelectedModels={setSelectedModels}
         handleCheckboxChange={handleCheckboxChange}
       />
-      <ProductList products={filteredProducts} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <ProductList products={filteredProducts} currentPage={currentPage} />
     </main>
-    </>
   );
 }

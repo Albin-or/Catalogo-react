@@ -199,8 +199,8 @@ export function ItemPage() {
                     <thead>
                         <tr>
                             <th>Marca</th>
-                            <th>Precio Mayor</th>
-                            <th>Precio Detal</th>
+                            <th>Precio 1</th>
+                            <th>Precio 2</th>
                             <th>Cantidad</th>
                             <th>Almacén</th>
                         </tr>

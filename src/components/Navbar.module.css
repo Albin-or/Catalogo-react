@@ -154,7 +154,7 @@
     box-shadow: 0 12px 24px rgba(235,10,30,0.2);
 }
 
-.addItemButton {
+.actionButton {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -174,12 +174,19 @@
     letter-spacing: 0.02em;
     text-decoration: none; /* Ensure the link has no underline */
 }
-.addItemButton:hover,
-.addItemButton:focus-visible {
+.actionButton:hover,
+.actionButton:focus-visible {
     background: #ff2d35;
     outline: none;
     transform: translateY(-1px);
-    box-shadow: 0 12px 24px rgba(235,10,30,0.2);
+    box-shadow: var(--shadow);
+}
+
+.activeActionButton {
+    background: transparent;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--accent);
+    pointer-events: none;
 }
 
 @media (max-width: 768px) {
