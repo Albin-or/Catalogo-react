@@ -8,9 +8,9 @@ export function FiltersProvider({ children }) {
     const { products } = useInventory();
     const filters = useFilters(products);
     return (
-        <FiltersContext.Provider value={filters}>
+        <FiltersContext value={filters}>
             {children}
-        </FiltersContext.Provider>
+        </FiltersContext>
     );
 }
 
