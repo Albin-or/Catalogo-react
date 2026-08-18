@@ -1,6 +1,5 @@
 import styles from './App.module.css'
 import { Navbar } from './components/Navbar.jsx'
-import { FiltersProvider } from './components/FiltersContext.jsx'
 import { Routes, Route } from 'react-router'
 import { NotFoundPage } from './pages/NotFoundPage.jsx'
 import { InventoryProvider } from './hooks/useInventory.jsx'
@@ -15,21 +14,19 @@ const DischargePage = lazy(() => import('./pages/DischargePage.jsx').then(module
 function App() {
   return (
     <InventoryProvider>
-      <FiltersProvider>
-        <header className={styles.headerSticky}>
-          <Navbar />
-        </header>
-        <Suspense fallback={<div>Cargando...</div>}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/product" element={<ItemPage />} />
-            <Route path="/addItem" element={<AddItemPage />} />
-            <Route path="/restock" element={<RestockPage />} />
-            <Route path="/discharge" element={<DischargePage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </Suspense>
-      </FiltersProvider>
+      <header className={styles.headerSticky}>
+        <Navbar />
+      </header>
+      <Suspense fallback={<div>Cargando...</div>}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/product" element={<ItemPage />} />
+          <Route path="/addItem" element={<AddItemPage />} />
+          <Route path="/restock" element={<RestockPage />} />
+          <Route path="/discharge" element={<DischargePage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </InventoryProvider>
   );
 }

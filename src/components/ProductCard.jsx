@@ -1,5 +1,5 @@
 import styles from "./ProductCard.module.css"
-import { Link } from "./Link.jsx"
+import { Link } from "react-router"
 import { Img } from "./Img.jsx"
 
 export function ProductCard({ product }) {

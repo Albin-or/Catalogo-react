@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';  
+import { useFiltersStore } from '../stores/useFiltersStore.js';
 import { supabase } from '../supabaseClient';
 
 const InventoryContext = createContext(null);
 
 function useInventoryState() {  
-  const [products, setProducts] = useState([]);  
+  const setProducts = useFiltersStore((state) => state.setProducts);
   const [models, setModels] = useState([]);  
   const [categories, setCategories] = useState([]);  
   const [stores, setStores] = useState([]);
@@ -366,8 +367,7 @@ function useInventoryState() {
 
 
 
-  return {  
-    products,  
+  return {
     models,  
     categories,  
     stores,  

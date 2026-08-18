@@ -3,11 +3,13 @@ import styles from './ItemPage.module.css';
 import { useRouter } from '../hooks/useRouter.jsx';
 import { useInventory } from '../hooks/useInventory.jsx';
 import { Img } from '../components/Img.jsx';
+import { useFiltersStore } from '../stores/useFiltersStore.js';
 
 export function ItemPage() {
     const { getQueryParam, navigateTo } = useRouter();
     const partId = getQueryParam('id');
-    const { products, updateProduct, deleteProduct, isSubmitting, stores, categories, models } = useInventory();
+    const { updateProduct, deleteProduct, isSubmitting, stores, categories, models } = useInventory();
+    const products = useFiltersStore((state) => state.products);
     
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState(null);

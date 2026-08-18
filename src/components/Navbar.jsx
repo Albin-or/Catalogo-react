@@ -1,19 +1,21 @@
 import logo from '../assets/logo.svg'
 import searchIcon from '../assets/search-icon.svg'
 import styles from './Navbar.module.css'
-import { useFiltersContext } from './FiltersContext.jsx'
-import { Link } from './Link.jsx'
-import { NavLink } from 'react-router'
+import { useFiltersStore, cleanText } from '../stores/useFiltersStore.js'
+import { NavLink, useNavigate } from 'react-router'
+import { useState, useEffect } from 'react'
 import addItemIcon from '../assets/addItem.svg'
 import restockIcon from '../assets/charge.svg'
 import dischargeIcon from '../assets/discharge.svg'
 
 export function Navbar() {
-  const { searchQuery, handleInputChange } = useFiltersContext();
-
+  const searchQuery = useFiltersStore((state) => state.searchQuery);
+  const handleInputChange = useFiltersStore((state) => state.handleInputChange);
   const handleSearchSubmit = (e) => {
     e.preventDefault()
+    navigate('/')
   }
+  const navigate = useNavigate();
 
   return (
     <nav className={styles.navigation}>
@@ -27,7 +29,7 @@ export function Navbar() {
         </span>
 
         <input
-          defaultValue={searchQuery}
+          value={searchQuery}
           id="search-parts"
           type="search"
           placeholder="Número de pieza / Descripción / Categoría"

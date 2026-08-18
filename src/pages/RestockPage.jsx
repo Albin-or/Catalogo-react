@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useInventory } from '../hooks/useInventory.jsx';
 import { supabase } from '../supabaseClient';
+import { useFiltersStore } from '../stores/useFiltersStore.js';
 import styles from './RestockPage.module.css';
 
 export function RestockPage() {
-  const { products, stores, addBrand, restockProduct, isSubmitting, error } = useInventory();
+  const { stores, addBrand, restockProduct, isSubmitting, error } = useInventory();
+  const products = useFiltersStore((state) => state.products);
 
   const [partNumberSearch, setPartNumberSearch] = useState('');
   const [nameSearch, setNameSearch] = useState('');

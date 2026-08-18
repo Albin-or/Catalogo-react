@@ -75,12 +75,8 @@
     }
 }
 
-.logo {
-    color: #fff;
-    font-size: 1.7rem;
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    text-transform: uppercase;
+.logo img{
+    max-height: 100%;
 }
 
 .search {
