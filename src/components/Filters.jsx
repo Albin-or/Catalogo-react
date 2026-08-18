@@ -1,14 +1,13 @@
 import styles from "./Filters.module.css";
-import { cleanText } from '../hooks/useFilters.jsx'
 import { useInventory } from '../hooks/useInventory.jsx'
+import { useFiltersStore, cleanText } from '../stores/useFiltersStore.js'
 
-export function Filters({ 
-  selectedCategories,
-  selectedModels,
-  handleCheckboxChange
-}) {
+export function Filters() {
   const { categories, models, error } = useInventory();
-
+  const handleCheckboxChange = useFiltersStore((state) => state.handleCheckboxChange);
+  const selectedCategories = useFiltersStore((state) => state.selectedCategories);
+  const selectedModels = useFiltersStore((state) => state.selectedModels);
+  
   return (
     <aside className={styles.filters}>
       <h2>Filtros</h2>
@@ -29,7 +28,7 @@ export function Filters({
                 name="category" 
                 value={cat.id} 
                 checked={selectedCategories.includes(cleanText(String(cat.id)))}
-                onChange={() => handleCheckboxChange(cat.id, selectedCategories, 'categories')}
+                onChange={() => handleCheckboxChange(cat.id, 'selectedCategories')}
               />
               <span className={styles.labelText}>{cat.label}</span>
             </label>
@@ -47,7 +46,7 @@ export function Filters({
                 name="model" 
                 value={model.id} 
                 checked={selectedModels.includes(cleanText(String(model.id)))}
-                onChange={() => handleCheckboxChange(model.id, selectedModels, 'models')}
+                onChange={() => handleCheckboxChange(model.id, 'selectedModels')}
               />
               <span className={styles.labelText}>{model.label}</span>
             </label>

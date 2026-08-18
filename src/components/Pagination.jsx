@@ -1,16 +1,12 @@
 import styles from "./Pagination.module.css";
-import { useFiltersContext } from "./FiltersContext.jsx";
+import { useFiltersStore } from "../stores/useFiltersStore.js";
 
 export function Pagination({ totalPages }) {
-    const { currentPage, updateSearchParams } = useFiltersContext();
+    const { currentPage, handlePageChange } = useFiltersStore();
     const pageNumbers = [];
     for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
     }
-    const handlePageChange = (page) => {
-        updateSearchParams('page', page.toString());
-    }
-
     return (
         <div className={styles.paginationContainer}>
             <button 

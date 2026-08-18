@@ -1,11 +1,13 @@
 import { useState, useMemo } from "react"
+import { useFiltersStore } from "../stores/useFiltersStore.js"
 import styles from "./ProductList.module.css"
 import { ProductCard } from "./ProductCard.jsx"
 import { Pagination } from "./Pagination.jsx"
 
-export function ProductList({ products, currentPage }) {
-    const productsPerPage = 10;
-
+export function ProductList() {
+    const products = useFiltersStore((state) => state.filteredProducts);
+    const currentPage = useFiltersStore((state) => state.currentPage);
+    const productsPerPage = 12;
     const totalPages = Math.ceil(products.length / productsPerPage);
 
     const currentProducts = useMemo(() => {
