@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import errorImgLocal from '../assets/error-img.svg';
 
 export function Img({ src, alt, fallbackUrl, ...props }) {
   const cleanFallback = fallbackUrl || errorImgLocal;
-  const [imgSrc, setImgSrc] = useState(src || cleanFallback);
-
-  useEffect(() => {
-    setImgSrc(src || cleanFallback);
-  }, [src, cleanFallback]);
+  const requestedSrc = src || cleanFallback;
+  const [failedSrc, setFailedSrc] = useState(null);
+  const imgSrc = failedSrc === requestedSrc ? cleanFallback : requestedSrc;
 
   return (
     <img
@@ -15,8 +13,8 @@ export function Img({ src, alt, fallbackUrl, ...props }) {
       src={imgSrc}
       alt={alt}
       onError={() => {
-        if (imgSrc !== cleanFallback) {
-          setImgSrc(cleanFallback);
+        if (requestedSrc !== cleanFallback) {
+          setFailedSrc(requestedSrc);
         }
       }}
     />
