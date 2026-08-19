@@ -1,8 +1,36 @@
-import { useEffect, useState } from 'react';
-import { useInventory } from '../hooks/useInventory.jsx';
+import { useEffect, useMemo, useState } from 'react';
+import { useInventory } from '../hooks/useInventoryContext.js';
 import { supabase } from '../supabaseClient';
 import { useFiltersStore } from '../stores/useFiltersStore.js';
 import styles from './RestockPage.module.css';
+
+function findProductBySearch(products, partValue, nameValue, priority) {
+  const trimmedPart = partValue?.trim() || '';
+  const trimmedName = nameValue?.trim() || '';
+
+  const findByPart = () => {
+    if (!trimmedPart) return null;
+    return products.find((product) => product.part_number?.toLowerCase() === trimmedPart.toLowerCase()) || null;
+  };
+
+  const findByName = () => {
+    if (!trimmedName) return null;
+    const normalizedName = trimmedName.toLowerCase();
+    return products.find((product) => product.name?.toLowerCase().includes(normalizedName)) || null;
+  };
+
+  if (priority === 'name') {
+    return trimmedName ? findByName() : findByPart();
+  }
+
+  return trimmedPart ? findByPart() : findByName();
+}
+
+function shouldAutoFillOtherField(otherValue, previousValue) {
+  const trimmedOther = otherValue?.trim() || '';
+  const trimmedPrevious = previousValue?.trim() || '';
+  return trimmedOther === '' || trimmedOther.toLowerCase() === trimmedPrevious.toLowerCase();
+}
 
 export function RestockPage() {
   const { stores, addBrand, restockProduct, isSubmitting, error } = useInventory();
@@ -10,7 +38,6 @@ export function RestockPage() {
 
   const [partNumberSearch, setPartNumberSearch] = useState('');
   const [nameSearch, setNameSearch] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [lastChangedField, setLastChangedField] = useState(null);
   const [availableBrands, setAvailableBrands] = useState([]);
   const [incomingStocks, setIncomingStocks] = useState([
@@ -26,57 +53,30 @@ export function RestockPage() {
     loadBrands();
   }, []);
 
-  const findProductBySearch = (partValue, nameValue, priority) => {
-    const trimmedPart = partValue?.trim() || '';
-    const trimmedName = nameValue?.trim() || '';
-
-    const findByPart = () => {
-      if (!trimmedPart) return null;
-      return products.find((product) => product.part_number?.toLowerCase() === trimmedPart.toLowerCase()) || null;
-    };
-
-    const findByName = () => {
-      if (!trimmedName) return null;
-      const normalizedName = trimmedName.toLowerCase();
-      return products.find((product) => product.name?.toLowerCase().includes(normalizedName)) || null;
-    };
-
-    if (priority === 'name') {
-      return trimmedName ? findByName() : findByPart();
-    }
-
-    return trimmedPart ? findByPart() : findByName();
-  };
-
-  const shouldAutoFillOtherField = (otherValue, previousValue) => {
-    const trimmedOther = otherValue?.trim() || '';
-    const trimmedPrevious = previousValue?.trim() || '';
-    return trimmedOther === '' || trimmedOther.toLowerCase() === trimmedPrevious.toLowerCase();
-  };
-
-  useEffect(() => {
-    const trimmedPart = partNumberSearch.trim();
-    const trimmedName = nameSearch.trim();
-
-    if (!trimmedPart && !trimmedName) {
-      setSelectedProduct(null);
-      return;
-    }
-
+  const selectedProduct = useMemo(() => {
     const priority = lastChangedField === 'name' ? 'name' : 'part';
-    const match = findProductBySearch(partNumberSearch, nameSearch, priority);
-    setSelectedProduct(match || null);
+    return findProductBySearch(products, partNumberSearch, nameSearch, priority);
+  }, [lastChangedField, nameSearch, partNumberSearch, products]);
 
-    if (match) {
-      if (priority === 'part' && shouldAutoFillOtherField(nameSearch, selectedProduct?.name || match.name || '')) {
-        setNameSearch(match.name || '');
-      }
+  const handlePartNumberChange = (value) => {
+    setPartNumberSearch(value);
+    setLastChangedField('part');
 
-      if (priority === 'name' && shouldAutoFillOtherField(partNumberSearch, selectedProduct?.part_number || match.part_number || '')) {
-        setPartNumberSearch(match.part_number || '');
-      }
+    const match = findProductBySearch(products, value, nameSearch, 'part');
+    if (match && shouldAutoFillOtherField(nameSearch, match.name || '')) {
+      setNameSearch(match.name || '');
     }
-  }, [partNumberSearch, nameSearch, products, lastChangedField, selectedProduct]);
+  };
+
+  const handleNameChange = (value) => {
+    setNameSearch(value);
+    setLastChangedField('name');
+
+    const match = findProductBySearch(products, partNumberSearch, value, 'name');
+    if (match && shouldAutoFillOtherField(partNumberSearch, match.part_number || '')) {
+      setPartNumberSearch(match.part_number || '');
+    }
+  };
 
   const handleStockRowChange = (index, field, value) => {
     setIncomingStocks((prev) => {
@@ -176,7 +176,7 @@ export function RestockPage() {
       alert('¡Inventario cargado y precios actualizados con éxito!');
       setPartNumberSearch('');
       setNameSearch('');
-      setSelectedProduct(null);
+      setLastChangedField(null);
       setIncomingStocks([
         { brand_id: '', _brand_name_input: '', _is_new: false, store_id: '', price_1: '', price_2: '', quantity: '' }
       ]);
@@ -208,8 +208,7 @@ export function RestockPage() {
                 list="part-number-dataset"
                 value={partNumberSearch}
                 onChange={(e) => {
-                  setPartNumberSearch(e.target.value);
-                  setLastChangedField('part');
+                  handlePartNumberChange(e.target.value);
                 }}
                 autoComplete="off"
               />
@@ -229,8 +228,7 @@ export function RestockPage() {
                 list="product-name-dataset"
                 value={nameSearch}
                 onChange={(e) => {
-                  setNameSearch(e.target.value);
-                  setLastChangedField('name');
+                  handleNameChange(e.target.value);
                 }}
                 autoComplete="off"
               />
