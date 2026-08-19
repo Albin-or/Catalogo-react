@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useInventory } from '../hooks/useInventory.jsx';
+import { useInventory } from '../hooks/useInventoryContext.js';
 import { supabase } from '../supabaseClient';
 import styles from './AddItemPage.module.css';
 

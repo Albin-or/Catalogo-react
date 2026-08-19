@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './ItemPage.module.css';
 import { useRouter } from '../hooks/useRouter.jsx';
-import { useInventory } from '../hooks/useInventory.jsx';
+import { useInventory } from '../hooks/useInventoryContext.js';
 import { Img } from '../components/Img.jsx';
 import { useFiltersStore } from '../stores/useFiltersStore.js';
 

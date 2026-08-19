@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback, createContext, useContext } from 'react';  
+import { useState, useEffect, useCallback } from 'react';
 import { useFiltersStore } from '../stores/useFiltersStore.js';
 import { supabase } from '../supabaseClient';
-
-const InventoryContext = createContext(null);
+import { InventoryContext } from './InventoryContext.js';
 
 function useInventoryState() {  
   const setProducts = useFiltersStore((state) => state.setProducts);
@@ -83,7 +82,7 @@ function useInventoryState() {
     } finally {  
       setLoading(false);  
     }  
-  }, []);
+  }, [setProducts]);
 
   // Inicialización de datos al montar el componente  
   useEffect(() => {  
@@ -393,9 +392,4 @@ export function InventoryProvider({ children }) {
       {children}
     </InventoryContext.Provider>
   );
-}
-
-export function useInventory() {
-  const context = useContext(InventoryContext);
-  return context ?? useInventoryState();
 }

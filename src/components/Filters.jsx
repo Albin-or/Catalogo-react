@@ -1,5 +1,5 @@
 import styles from "./Filters.module.css";
-import { useInventory } from '../hooks/useInventory.jsx'
+import { useInventory } from '../hooks/useInventoryContext.js'
 import { useFiltersStore, cleanText } from '../stores/useFiltersStore.js'
 
 export function Filters() {

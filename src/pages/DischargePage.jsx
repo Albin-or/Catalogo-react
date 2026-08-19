@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useInventory } from '../hooks/useInventory.jsx';
+import { useInventory } from '../hooks/useInventoryContext.js';
 import styles from './DischargePage.module.css';
 import { useFiltersStore } from '../stores/useFiltersStore.js';
 
