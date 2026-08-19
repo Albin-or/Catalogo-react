@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
 import { useFiltersStore } from "../stores/useFiltersStore.js"
 import styles from "./ProductList.module.css"
 import { ProductCard } from "./ProductCard.jsx"
