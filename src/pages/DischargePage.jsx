@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 import { useInventory } from '../hooks/useInventory.jsx';
 import styles from './DischargePage.module.css';
+import { useFiltersStore } from '../stores/useFiltersStore.js';
 
 export function DischargePage() {
-  const { products, stores, checkoutInventory, isSubmitting, error } = useInventory();
-
+  const { stores, checkoutInventory, isSubmitting, error } = useInventory();
+  const products = useFiltersStore((state) => state.products);
   const [responsibleName, setResponsibleName] = useState('');
   const [dischargeReason, setDischargeReason] = useState('');
   const [cart, setCart] = useState([]);
